@@ -1,1 +1,6 @@
+# IDE
+.idea
+*.iml
+
+# Android
 /gen

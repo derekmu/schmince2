@@ -1,11 +1,10 @@
-Schmince - Android game
-========
+# Schmince
 
-This is the evolution of a game created for Ludum Dare 28.
+A game is about navigating a group of scattered characters through a maze with purple slug monsters.
+Find the spaceship and get all the characters inside to win!
 
-The game is about navigating a group of scattered characters through a maze like land with purple slug monsters chasing you down.
+## Links
 
-You can see the original code in the other repository I created:
-https://github.com/derekmu/Schmince
-The game is also on Google Play:
-https://play.google.com/store/apps/details?id=com.schmince&hl=en
+Original version created for Ludum Dare 28: https://github.com/derekmu/schmince
+
+Get the game on Google Play: https://play.google.com/store/apps/details?id=com.schmince&hl=en
