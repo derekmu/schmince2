@@ -25,6 +25,10 @@ public class Enemy extends SObject {
 
 	private List<Point> openPath = new ArrayList<>();
 
+	private int nextX = -1, nextY = -1;
+	private float previousX = -1, previousY = -1;
+	long moveMillis;
+
 	public void update(GameModel gameModel) {
 		if (this.dead || lastMoveMilli > DTimer.get().millis() - MOVE_MILLI) {
 			return;
@@ -114,10 +118,35 @@ public class Enemy extends SObject {
 		}
 	}
 
+	public void predraw() {
+		SBlock block = getCurrentBlock();
+		if (nextX == -1 && nextY == -1) {
+			moveMillis = DTimer.get().millis();
+			nextX = block.X;
+			nextY = block.Y;
+			previousX = block.X;
+			previousY = block.Y;
+		}
+		if (block.X != nextX || block.Y != nextY) {
+			moveMillis = DTimer.get().millis();
+			previousX = nextX;
+			previousY = nextY;
+			nextX = block.X;
+			nextY = block.Y;
+		}
+	}
+
 	@Override
-	public void draw(SchminceRenderer renderer, SBlock block) {
+	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
+		if (cantSee) {
+			return;
+		}
+		long dt = DTimer.get().millis() - moveMillis;
+		long durationMillis = 500;
+		float x = dt > durationMillis ? nextX : (previousX + (nextX - previousX) * dt / durationMillis);
+		float y = dt > durationMillis ? nextY : (previousY + (nextY - previousY) * dt / durationMillis);
 		float[] vpMatrix = renderer.getVPMatrix();
-		Matrix.translateM(vpMatrix, 0, block.X, block.Y, 0);
+		Matrix.translateM(vpMatrix, 0, x, y, 0);
 		Matrix.scaleM(vpMatrix, 0, 0.5f, 0.5f, 1f);
 		GLEnemy icon = (GLEnemy) renderer.getGlib().getDrawer(GLIconType.Enemy);
 		icon.draw(vpMatrix, dead ? drawSeed : DTimer.get().millis() + drawSeed);

@@ -8,7 +8,7 @@ import com.schmince.SchminceRenderer;
 public abstract class SObject {
 	private SBlock currentBlock = null;
 
-	public abstract void draw(SchminceRenderer renderer, SBlock block);
+	public abstract void draw(SchminceRenderer renderer, SBlock block, boolean cantSee);
 
 	public abstract void interact(Player player);
 

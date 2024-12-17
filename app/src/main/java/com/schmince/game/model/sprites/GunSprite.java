@@ -39,8 +39,8 @@ public class GunSprite implements Sprite {
 			durationMillis = dist * 50;
 		}
 		long dt = DTimer.get().millis() - startMillis;
-		float x = (float) (sourceX + (targetX - sourceX) * dt / durationMillis);
-		float y = (float) (sourceY + (targetY - sourceY) * dt / durationMillis);
+		float x = dt > durationMillis ? targetX : (float) (sourceX + (targetX - sourceX) * dt / durationMillis);
+		float y = dt > durationMillis ? targetY : (float) (sourceY + (targetY - sourceY) * dt / durationMillis);
 		GLTriangle triangle = render.getGlib().getTriangle();
 		triangle.setVertices(vertices);
 		triangle.setColor(color);

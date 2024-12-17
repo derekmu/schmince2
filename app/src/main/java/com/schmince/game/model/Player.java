@@ -8,7 +8,6 @@ import com.schmince.game.GameModel;
 import com.schmince.gldraw.GLIconType;
 import com.schmince.gldraw.GLPlayer;
 import dopengl.shapes.GLLine;
-import dopengl.shapes.GLRectangle;
 import thed.DColor;
 import thed.DRandom;
 import thed.DTimer;
@@ -25,6 +24,7 @@ public class Player extends SObject {
 	private static final int LOCATE_MILLI = 10000;
 	private final int drawSeed = DRandom.get().nextInt(10000);
 	private final DColor color;
+	public final int Index;
 	private final GLColor glColor;
 	private int targetX = -1;
 	private int targetY = -1;
@@ -34,6 +34,10 @@ public class Player extends SObject {
 	private long timerMilli = 0;
 	private ItemType item = null;
 
+	private int nextX = -1, nextY = -1;
+	private float previousX = -1, previousY = -1;
+	long moveMillis;
+
 	private volatile boolean isAlert;
 	private long lastFlareMilli = 0;
 	private volatile boolean isFlared;
@@ -42,8 +46,9 @@ public class Player extends SObject {
 
 	private volatile int health = C.MAX_PLAYER_HEALTH;
 
-	public Player(DColor color) {
+	public Player(DColor color, int index) {
 		this.color = color;
+		this.Index = index;
 		this.glColor = new GLColor(color.Red, color.Green, color.Blue);
 	}
 
@@ -103,11 +108,39 @@ public class Player extends SObject {
 		}
 	}
 
+	public void predraw() {
+		SBlock block = getCurrentBlock();
+		if (nextX == -1 && nextY == -1) {
+			moveMillis = DTimer.get().millis();
+			nextX = block.X;
+			nextY = block.Y;
+			previousX = block.X;
+			previousY = block.Y;
+		}
+		if (block.X != nextX || block.Y != nextY) {
+			moveMillis = DTimer.get().millis();
+			previousX = nextX;
+			previousY = nextY;
+			nextX = block.X;
+			nextY = block.Y;
+		}
+	}
+
 	@Override
-	public void draw(SchminceRenderer renderer, SBlock block) {
+	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
+		if (cantSee) {
+			return;
+		}
+		long dt = DTimer.get().millis() - moveMillis;
+		long durationMillis = item == ItemType.Boots ? 250 : 500;
+		float x = dt > durationMillis ? nextX : (previousX + (nextX - previousX) * dt / durationMillis);
+		float y = dt > durationMillis ? nextY : (previousY + (nextY - previousY) * dt / durationMillis);
 		float[] vpMatrix = renderer.getVPMatrix();
-		Matrix.translateM(vpMatrix, 0, block.X, block.Y, 0);
+		Matrix.translateM(vpMatrix, 0, x, y, 0.001f);
 		Matrix.scaleM(vpMatrix, 0, 0.5f, 0.5f, 1f);
+		if (health <= 0) {
+			Matrix.rotateM(vpMatrix, 0, Index % 2 == 0 ? 90 : -90, 0, 0, 1);
+		}
 		GLPlayer icon = (GLPlayer) renderer.getGlib().getDrawer(GLIconType.Player);
 		icon.draw(vpMatrix, health <= 0 ? drawSeed : DTimer.get().millis() + drawSeed, glColor);
 
@@ -127,13 +160,6 @@ public class Player extends SObject {
 					lx = point.x;
 					ly = point.y;
 				}
-			}
-			if (lastActionMilli > timerMilli) {
-				GLRectangle rect = renderer.getGlib().getRectangle();
-				rect.setBounds(getX() - 0.5f, getY() - 0.5f,
-						(ACTION_MILLI - (lastActionMilli - timerMilli)) / (float) ACTION_MILLI,
-						0.1f);
-				rect.draw(vpMatrix, 1f, 1f, 1f, 1f);
 			}
 		}
 	}

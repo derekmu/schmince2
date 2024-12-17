@@ -14,7 +14,7 @@ public class MudWall extends SObject {
 	}
 
 	@Override
-	public void draw(SchminceRenderer renderer, SBlock block) {
+	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
 		GLRectangle rect = renderer.getGlib().getRectangle();
 		rect.setBounds(block.X - 0.5f, block.Y - 0.5f, 1f, 1f);
 		rect.draw(renderer.getVPMatrix(), 0.5f, 0.25f, 0f, 0.5f + (health / 10f) * 0.5f);

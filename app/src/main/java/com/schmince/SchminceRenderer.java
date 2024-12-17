@@ -33,6 +33,7 @@ public class SchminceRenderer extends DRenderer {
 
 	private float cameraX = 50f;
 	private float cameraY = 50f;
+	private int playerIndex;
 	private int playerX;
 	private int playerY;
 
@@ -68,7 +69,7 @@ public class SchminceRenderer extends DRenderer {
 		GLES20.glDepthFunc(GLES20.GL_LEQUAL); //default is GL_LESS
 
 		//Draw background (sets background color for future calls to GLES20.glClear)
-		GLES20.glClearColor(0.05f, 0.05f, 0.05f, 1f);
+		GLES20.glClearColor(0.15f, 0.15f, 0.15f, 1f);
 		GLES20.glClearDepthf(1f);
 	}
 
@@ -109,7 +110,9 @@ public class SchminceRenderer extends DRenderer {
 		model.forBlock(xs, ys, xe, ye, blockDrawer);
 		blockDrawer.after();
 
+		model.predrawObjects();
 		model.forBlock(xs, ys, xe, ye, objectDrawer);
+		objectDrawer.after();
 
 		model.getSprites(sprites);
 		for (Sprite sprite : sprites) {
@@ -164,9 +167,9 @@ public class SchminceRenderer extends DRenderer {
 	}
 
 	private void updateCamera() {
-		int selectedPlayer = model.getSelectedPlayerIndex();
-		playerX = model.getPlayerX(selectedPlayer);
-		playerY = model.getPlayerY(selectedPlayer);
+		playerIndex = model.getSelectedPlayerIndex();
+		playerX = model.getPlayerX(playerIndex);
+		playerY = model.getPlayerY(playerIndex);
 		float dx = playerX - cameraX;
 		float dy = playerY - cameraY;
 		if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
@@ -210,26 +213,21 @@ public class SchminceRenderer extends DRenderer {
 		@Override
 		public void forBlock(SBlock block) {
 			//GLRectangle rect = glib.getRectangle();
-			if (game.getGameState().useLOSDraw() && !model.isFlared()
-					&& !model.los().hasLOS(playerX, playerY, block.X, block.Y)) {
+			boolean cantSee = game.getGameState().useLOSDraw()
+					&& !model.isFlared()
+					&& !model.los().hasLOS(playerX, playerY, block.X, block.Y);
+			if (cantSee && !block.Seen[playerIndex]) {
 				triangleSetBatch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f, BLACK);
-				//rect.setBounds(block.X - 0.5f, block.Y - 0.5f, 1f, 1f);
-				//rect.draw(getVPMatrix(), 0f, 0f, 0f, 1f);
 			} else {
+				block.Seen[playerIndex] = true;
 				if (block.BlockType == SBlockType.ShipFloor) {
 					for (int i = 0; i < 6; i++) {
 						triangleSetBatch.batchRect(block.X - 0.5f + i * ONE_SIXTH, block.Y - 0.5f,
 								ONE_SIXTH, 1f, i % 2 == 1 ? SHIP_FLOOR_LIGHT : SHIP_FLOOR_DARK);
 					}
-
-					//rect.setBounds(block.X - 0.5f, block.Y - 0.5f, 1f, 1f);
-					//rect.draw(getVPMatrix(), 0.5f, 0.5f, 0.5f, 1f);
-
 				} else {
 					triangleSetBatch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f,
 							BASE_TILE_COLOR);
-					//rect.setBounds(block.X - 0.5f, block.Y - 0.5f, 1f, 1f);
-					//rect.draw(getVPMatrix(), C.BASE_TILE_COLOR, C.BASE_TILE_COLOR,C.BASE_TILE_COLOR, 1f);
 				}
 			}
 		}
@@ -240,15 +238,29 @@ public class SchminceRenderer extends DRenderer {
 	}
 
 	private class ObjectDrawer implements ForSBlock {
+		private final GLColor FOG = new GLColor(0f, 0f, 0f, 0.5f);
+		private TriangleSetBatch triangleSetBatch = new TriangleSetBatch(SchminceRenderer.this);
+
 		@Override
 		public void forBlock(SBlock block) {
-			SObject object = block.getObject();
-			if (object != null) {
-				if (game.getGameState().useLOSDraw() && !model.isFlared() && !model.los().hasLOS(playerX, playerY, block.X, block.Y)) {
-				} else {
-					object.draw(SchminceRenderer.this, block);
+			boolean cantSee = game.getGameState().useLOSDraw()
+					&& !model.isFlared()
+					&& !model.los().hasLOS(playerX, playerY, block.X, block.Y);
+			if (cantSee && !block.Seen[playerIndex]) {
+				// draw nothing
+			} else {
+				SObject object = block.getObject();
+				if (object != null) {
+					object.draw(SchminceRenderer.this, block, cantSee);
+				}
+				if (cantSee) {
+					triangleSetBatch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f, FOG);
 				}
 			}
+		}
+
+		public void after() {
+			triangleSetBatch.finishTriangleBatch();
 		}
 	}
 }

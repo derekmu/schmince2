@@ -49,7 +49,7 @@ public class GameModel implements GameModelInterface {
 		for (int i = 0; i < blocks.length; i++) {
 			SBlock[] blocker = blocks[i] = new SBlock[mapSize];
 			for (int j = 0; j < blocker.length; j++) {
-				SBlock block = blocker[j] = new SBlock(i, j);
+				SBlock block = blocker[j] = new SBlock(i, j, playerCount);
 				int dx = shipX - i;
 				int dy = shipY - j;
 				if (Math.abs(dx) <= C.SHIP_SIZE && Math.abs(dy) <= C.SHIP_SIZE) {
@@ -86,7 +86,7 @@ public class GameModel implements GameModelInterface {
 
 		this.players = new Player[playerCount];
 		for (int i = 0; i < playerCount; i++) {
-			Player player = players[i] = new Player(C.PLAYER_COLORS[i]);
+			Player player = players[i] = new Player(C.PLAYER_COLORS[i], i);
 			int x;
 			int y;
 			do {
@@ -148,7 +148,7 @@ public class GameModel implements GameModelInterface {
 		for (int i = 0; i < blocks.length; i++) {
 			SBlock[] blocker = blocks[i] = new SBlock[mapSize];
 			for (int j = 0; j < blocker.length; j++) {
-				SBlock block = blocker[j] = new SBlock(i, j);
+				SBlock block = blocker[j] = new SBlock(i, j, playerCount);
 				if (stage.getShipLocation() != null) {
 					int dx = stage.getShipLocation().x - i;
 					int dy = stage.getShipLocation().y - j;
@@ -184,7 +184,7 @@ public class GameModel implements GameModelInterface {
 
 		this.players = new Player[playerCount];
 		for (int i = 0; i < playerCount; i++) {
-			Player player = players[i] = new Player(C.PLAYER_COLORS[i]);
+			Player player = players[i] = new Player(C.PLAYER_COLORS[i], i);
 			int x = stage.getPlayerLocations()[i].x;
 			int y = stage.getPlayerLocations()[i].y;
 			blocks[x][y].setObject(player);
@@ -385,6 +385,16 @@ public class GameModel implements GameModelInterface {
 		synchronized (sprites) {
 			spriteHolder.addAll(sprites);
 			sprites.clear();
+		}
+	}
+
+	@Override
+	public void predrawObjects() {
+		for (Player player : players) {
+			player.predraw();
+		}
+		for (Enemy enemy : enemies) {
+			enemy.predraw();
 		}
 	}
 

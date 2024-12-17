@@ -37,4 +37,6 @@ public interface GameModelInterface {
 	HTPMessage getHTPMessage();
 
 	void getSprites(List<Sprite> sprites);
+
+	void predrawObjects();
 }

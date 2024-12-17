@@ -14,7 +14,10 @@ public class Item extends SObject {
 	}
 
 	@Override
-	public void draw(SchminceRenderer renderer, SBlock block) {
+	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
+		if (cantSee) {
+			return;
+		}
 		float[] vpMatrix = renderer.getVPMatrix();
 		Matrix.translateM(vpMatrix, 0, block.X, block.Y, 0);
 		Matrix.scaleM(vpMatrix, 0, 0.5f, 0.5f, 1f);

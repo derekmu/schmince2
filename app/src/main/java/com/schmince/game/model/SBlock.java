@@ -6,12 +6,14 @@ package com.schmince.game.model;
 public class SBlock {
 	public final int X;
 	public final int Y;
+	public final boolean[] Seen;
 	public SBlockType BlockType = SBlockType.None;
 	private volatile SObject object;
 
-	public SBlock(int x, int y) {
+	public SBlock(int x, int y, int playerCount) {
 		this.X = x;
 		this.Y = y;
+		this.Seen = new boolean[playerCount];
 	}
 
 	public SObject getObject() {
