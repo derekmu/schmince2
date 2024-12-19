@@ -66,7 +66,7 @@ public class Enemy extends SObject {
 				gameModel.onAttackPlayer(this, chasePlayer);
 				return true;
 			} else {
-				List<Point> path = gameModel.path().findPath(getX(), getY(), chasePlayer.getX(), chasePlayer.getY(), false, false);
+				List<Point> path = gameModel.path().findPath(getX(), getY(), chasePlayer.getX(), chasePlayer.getY(), false, false, -1);
 				if (path.size() >= 2) {
 					Point next = path.get(1); //0 will be the current location
 					if (next != null) {

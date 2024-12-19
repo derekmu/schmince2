@@ -1,23 +1,25 @@
 package com.schmince.game.model;
 
 import com.schmince.SchminceRenderer;
-import dopengl.shapes.GLRectangle;
+import dopengl.shapes.GLRock;
 
 /**
  * @author Derek Mulvihill - Jan 18, 2014
  */
-public class MudWall extends SObject {
+public class Rock extends SObject {
 	private volatile int health;
+	private final double angleOffset;
 
-	public MudWall(float sample) {
+	public Rock(float sample) {
 		this.health = Math.max(1, Math.round(sample * 10f));
+		this.angleOffset = thed.DRandom.get().nextDouble() * Math.PI * 2;
 	}
 
 	@Override
 	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
-		GLRectangle rect = renderer.getGlib().getRectangle();
-		rect.setBounds(block.X - 0.5f, block.Y - 0.5f, 1f, 1f);
-		rect.draw(renderer.getVPMatrix(), 0.5f, 0.25f, 0f, 0.5f + (health / 10f) * 0.5f);
+		GLRock rect = renderer.getGlib().getRock();
+		rect.setPolygon(block.X, block.Y, 0.5f, 3 + health, this.angleOffset);
+		rect.draw(renderer.getVPMatrix(), 0.1f + 0.4f * (health / 10f), 0.1f + 0.15f * (health / 10f), 0f, 1f);
 	}
 
 	@Override
@@ -38,9 +40,9 @@ public class MudWall extends SObject {
 	}
 
 	@Override
-	public float getPathWeight(boolean canDig, boolean hasPick) {
+	public float getPathCost(boolean canDig, boolean hasPick) {
 		if (!canDig) {
-			return 1000000f;
+			return Float.POSITIVE_INFINITY;
 		} else if (hasPick) {
 			return 2;
 		} else {

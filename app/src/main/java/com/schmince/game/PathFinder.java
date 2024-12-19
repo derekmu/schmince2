@@ -20,38 +20,44 @@ public class PathFinder {
 	/**
 	 * A* algorithm, based on Wikipedia.
 	 */
-	public List<Point> findPath(int x, int y, int targetX, int targetY, boolean canDig, boolean hasPick) {
+	public List<Point> findPath(int x, int y, int tx, int ty, boolean canDig, boolean hasPick, int seenIndex) {
 		Point start = new Point(x, y);
+		Point target = new Point(tx, ty);
 		Set<Point> closedSet = new HashSet<>();
 		Set<Point> openSet = new HashSet<>();
 		openSet.add(start);
 		Map<Point, Point> cameFrom = new HashMap<>();
 
-		Map<Point, Float> gScore = new HashMap<>();
-		gScore.put(start, 0f);
-		Map<Point, Float> fScore = new HashMap<>();
-		fScore.put(start, 0 + hScore(start, targetX, targetY));
+		// lowest cost to get to a point from the start
+		Map<Point, Float> toScore = new HashMap<>();
+		toScore.put(start, 0f);
+		// lowest heuristic cost to get to the target via a point
+		Map<Point, Float> viaScore = new HashMap<>();
+		viaScore.put(start, heuristic(start, target));
 		int iteration = 0;
 
+		Point closest = start;
+		float closestScore = heuristic(start, target);
 		while (!openSet.isEmpty()) {
 			iteration++;
-			if (iteration > 1000) {
+			if (iteration > 200) {
 				break;
 			}
+
+			// find the point with the lowest estimated cost in the open set (this should be a heap for efficiency)
 			Point current = null;
-			Float curval = null;
-			for (Point pt : openSet) {
-				Float ptValue = fScore.get(pt);
-				if (curval == null || ptValue < curval) {
-					current = pt;
-					curval = ptValue;
+			Float currentScore = null;
+			for (Point p : openSet) {
+				Float score = viaScore.get(p);
+				if (currentScore == null || score < currentScore) {
+					current = p;
+					currentScore = score;
 				}
 			}
 
-			if (current.x == targetX && current.y == targetY) {
-				List<Point> path = new ArrayList<>();
-				reconstructPath(cameFrom, current, path);
-				return path;
+			// reached our target
+			if (current.x == tx && current.y == ty) {
+				break;
 			}
 
 			openSet.remove(current);
@@ -61,20 +67,33 @@ public class PathFinder {
 				if (neighbor == null) {
 					continue;
 				}
-				if (closedSet.contains(neighbor)) {
+				float cost = cost(neighbor, target, canDig, hasPick, seenIndex);
+				if (Float.isInfinite(cost)) {
 					continue;
 				}
-				float tgScore = gScore.get(current) + gScore(neighbor, targetX, targetY, canDig, hasPick);
-				if (!openSet.contains(neighbor) || tgScore < gScore.get(neighbor)) {
+				float heuristic = heuristic(neighbor, target);
+				if (heuristic < closestScore) {
+					closest = neighbor;
+					closestScore = heuristic;
+				}
+				Float oldToScore = toScore.get(neighbor);
+				float newToScore = toScore.get(current) + cost;
+				if (oldToScore == null || newToScore < oldToScore) {
+					openSet.remove(neighbor);
+					closedSet.remove(neighbor);
+				}
+				if (!openSet.contains(neighbor) && !closedSet.contains(neighbor)) {
 					cameFrom.put(neighbor, current);
-					gScore.put(neighbor, tgScore);
-					fScore.put(neighbor, tgScore + hScore(neighbor, targetX, targetY));
+					toScore.put(neighbor, newToScore);
+					viaScore.put(neighbor, newToScore + heuristic(neighbor, target));
 					openSet.add(neighbor);
 				}
 			}
 		}
 
-		return new ArrayList<>();
+		List<Point> path = new ArrayList<>();
+		reconstructPath(cameFrom, closest, path);
+		return path;
 	}
 
 	private Point[] neighbors(Point current) {
@@ -121,28 +140,32 @@ public class PathFinder {
 				points[i] = new Point(x, y);
 			}
 		}
-
 		return points;
 	}
 
-	private float gScore(Point neighbor, int targetX, int targetY, boolean canDig, boolean hasPick) {
-		if (neighbor.x == targetX && neighbor.y == targetY) {
+	/**
+	 * Cost of moving into a point.
+	 */
+	private float cost(Point to, Point target, boolean canDig, boolean hasPick, int seenIndex) {
+		// no cost associated with moving into the actual target
+		if (to.x == target.x && to.y == target.y) {
+			return 0f;
+		}
+		SBlock block = blocks[to.x][to.y];
+		if (block.getObject() != null) {
+			return block.getPathCost(canDig, hasPick, seenIndex);
+		} else {
 			return 1f;
 		}
-		SBlock block = blocks[neighbor.x][neighbor.y];
-		if (block.getObject() != null) {
-			return block.getObject().getPathWeight(canDig, hasPick);
-		}
-		return 1f;
 	}
 
 	/**
-	 * Heuristic modified from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html.
+	 * Euclidian distance heuristic from http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html.
 	 */
-	private float hScore(Point from, int targetX, int targetY) {
-		int dx = Math.abs(targetX - from.x);
-		int dy = Math.abs(targetY - from.y);
-		return Math.max(dx, dy) + Math.min(dx, dy) * 0.0001f;
+	private float heuristic(Point from, Point to) {
+		int dx = Math.abs(to.x - from.x);
+		int dy = Math.abs(to.y - from.y);
+		return (float) Math.sqrt(dx * dx + dy * dy);
 	}
 
 	private void reconstructPath(Map<Point, Point> cameFrom, Point current, List<Point> path) {

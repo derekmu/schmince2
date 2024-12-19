@@ -74,7 +74,7 @@ public class GameModel implements GameModelInterface {
 				}
 				float sample = (float) SimplexNoise.noise(xoff + i * 0.2, yoff + j * 0.2);
 				if (sample > 0) {
-					MudWall wall = new MudWall(sample);
+					Rock wall = new Rock(sample);
 					block.setObject(wall);
 					continue;
 				}
@@ -174,12 +174,12 @@ public class GameModel implements GameModelInterface {
 		this.pathFinder = new PathFinder(blocks, mapSize);
 		this.losFinder = new LOSFinder(blocks);
 
-		int mudCount = stage.getMudLocations().length;
-		for (int i = 0; i < mudCount; i++) {
-			MudWall wall = new MudWall(DRandom.get().nextFloat());
-			int x = stage.getMudLocations()[i].x;
-			int y = stage.getMudLocations()[i].y;
-			blocks[x][y].setObject(wall);
+		int rockCount = stage.getRockLocations().length;
+		for (int i = 0; i < rockCount; i++) {
+			Rock rock = new Rock(DRandom.get().nextFloat());
+			int x = stage.getRockLocations()[i].x;
+			int y = stage.getRockLocations()[i].y;
+			blocks[x][y].setObject(rock);
 		}
 
 		this.players = new Player[playerCount];

@@ -30,8 +30,8 @@ public abstract class SObject {
 
 	public abstract boolean isInteractable();
 
-	public float getPathWeight(boolean canDig, boolean hasPick) {
-		return 1000000f;
+	public float getPathCost(boolean canDig, boolean hasPick) {
+		return Float.POSITIVE_INFINITY;
 	}
 
 	public boolean blocksLOS() {

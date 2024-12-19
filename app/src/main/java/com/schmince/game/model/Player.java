@@ -94,12 +94,15 @@ public class Player extends SObject {
 			if (item == ItemType.Boots) {
 				lastActionMilli -= 250;
 			}
-		} else if (block.getObject().isInteractable() && block.X == targetX && block.Y == targetY) {
+		} else if (block.getObject().isInteractable()
+				&& block.X == targetX
+				&& block.Y == targetY) {
 			block.getObject().interact(this);
 			gameModel.onPlayerMoved(this);
 			lastActionMilli = DTimer.get().millis();
+			setTarget(-1, -1, gameModel);
 		} else if (block.getObject().isInteractable()
-				&& block.getObject().getPathWeight(true, false) < 100000f) {
+				&& !Float.isInfinite(block.getObject().getPathCost(true, false))) {
 			block.getObject().interact(this);
 			gameModel.onPlayerMoved(this);
 			lastActionMilli = DTimer.get().millis();
@@ -190,7 +193,7 @@ public class Player extends SObject {
 		this.targetY = targetY;
 		this.path = null;
 		if (targetX != -1 && targetY != -1 && gameModel != null) {
-			path = gameModel.path().findPath(getX(), getY(), targetX, targetY, true, this.item == ItemType.Pick);
+			path = gameModel.path().findPath(getX(), getY(), targetX, targetY, true, this.item == ItemType.Pick, this.Index);
 			pathLocation = 1; //0 is current location
 		}
 	}

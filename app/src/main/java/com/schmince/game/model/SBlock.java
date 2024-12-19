@@ -26,4 +26,11 @@ public class SBlock {
 			object.onNewBlock(this);
 		}
 	}
+
+	public float getPathCost(boolean canDig, boolean hasPick, int seenIndex) {
+		if ((seenIndex == -1 || Seen[seenIndex]) && object != null) {
+			return object.getPathCost(canDig, hasPick);
+		}
+		return 1f;
+	}
 }

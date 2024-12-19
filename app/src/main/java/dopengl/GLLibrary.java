@@ -24,7 +24,8 @@ public class GLLibrary implements GLTextCache {
 	private GLTriangle triangle = null;
 	private GLTriangleUniform triangleUniform = null;
 	private GLRectangle rectangle = null;
-	private GLTriangleSet triangleset = null;
+	private GLRock rock = null;
+	private GLTriangleSet triangleSet = null;
 
 	private Context context;
 
@@ -60,11 +61,18 @@ public class GLLibrary implements GLTextCache {
 		return rectangle;
 	}
 
-	public GLTriangleSet getTriangleSet() {
-		if (triangleset == null) {
-			triangleset = new GLTriangleSet();
+	public GLRock getRock() {
+		if (rock == null) {
+			rock = new GLRock();
 		}
-		return triangleset;
+		return rock;
+	}
+
+	public GLTriangleSet getTriangleSet() {
+		if (triangleSet == null) {
+			triangleSet = new GLTriangleSet();
+		}
+		return triangleSet;
 	}
 
 	public GLDrawable getDrawer(GLDrawableProvider provider) {

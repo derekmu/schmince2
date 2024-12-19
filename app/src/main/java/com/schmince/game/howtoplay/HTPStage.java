@@ -11,7 +11,7 @@ import com.schmince.game.model.ItemType;
 public class HTPStage {
 	int mapSize;
 	Point[] playerLocations;
-	Point[] mudLocations;
+	Point[] rockLocations;
 	Point[] enemyLocations;
 	ItemType[] itemTypes;
 	Point[] itemLocations;
@@ -26,7 +26,7 @@ public class HTPStage {
 		stage1.mapSize = 8;
 		stage1.shipLocation = null;
 		stage1.playerLocations = new Point[]{new Point(3, 3)};
-		stage1.mudLocations = new Point[]{new Point(0, 0), new Point(1, 0), new Point(0, 1),
+		stage1.rockLocations = new Point[]{new Point(0, 0), new Point(1, 0), new Point(0, 1),
 				new Point(7, 4), new Point(6, 4), new Point(5, 4), new Point(5, 3),
 				new Point(6, 3), new Point(0, 5), new Point(1, 5), new Point(2, 6), new Point(2, 7)};
 		stage1.enemyLocations = new Point[]{};
@@ -49,7 +49,7 @@ public class HTPStage {
 		stage2.mapSize = 8;
 		stage2.shipLocation = null;
 		stage2.playerLocations = new Point[]{new Point(7, 0), new Point(0, 7)};
-		stage2.mudLocations = new Point[]{new Point(0, 0), new Point(1, 1), new Point(2, 2), new Point(3, 3),
+		stage2.rockLocations = new Point[]{new Point(0, 0), new Point(1, 1), new Point(2, 2), new Point(3, 3),
 				new Point(4, 4), new Point(5, 5), new Point(6, 6), new Point(7, 7), new Point(1, 0), new Point(2, 1),
 				new Point(3, 2), new Point(4, 3), new Point(5, 4), new Point(6, 5), new Point(7, 6), new Point(1, 0),
 				new Point(2, 1), new Point(3, 2), new Point(4, 3), new Point(5, 4), new Point(6, 5), new Point(7, 6),};
@@ -66,12 +66,12 @@ public class HTPStage {
 						"Survivors will keep moving while you ",
 						"check on others. "),
 				new HTPMessage(false,
-						"Survivors can dig through mud walls. ")};
+						"Survivors can dig through rocks. ")};
 
 		HTPStage stage3 = new HTPStage();
 		stage3.mapSize = 8;
 		stage3.playerLocations = new Point[]{new Point(0, 4)};
-		stage3.mudLocations = new Point[]{new Point(0, 0), new Point(1, 0), new Point(0, 1), new Point(7, 4),
+		stage3.rockLocations = new Point[]{new Point(0, 0), new Point(1, 0), new Point(0, 1), new Point(7, 4),
 				new Point(6, 4), new Point(5, 4), new Point(5, 3), new Point(6, 3), new Point(0, 5), new Point(1, 5),
 				new Point(2, 6), new Point(2, 7)};
 		stage3.enemyLocations = new Point[]{new Point(7, 0)};
@@ -95,7 +95,7 @@ public class HTPStage {
 		stage4.mapSize = 8;
 		stage4.shipLocation = null;
 		stage4.playerLocations = new Point[]{new Point(3, 3)};
-		stage4.mudLocations = new Point[]{new Point(0, 0), new Point(1, 0), new Point(0, 1),
+		stage4.rockLocations = new Point[]{new Point(0, 0), new Point(1, 0), new Point(0, 1),
 				new Point(7, 4), new Point(6, 4), new Point(5, 4), new Point(5, 3),
 				new Point(6, 3), new Point(0, 5), new Point(1, 5), new Point(2, 6),
 				new Point(2, 7), new Point(2, 5)};
@@ -131,7 +131,7 @@ public class HTPStage {
 		stage5.shipLocation = new Point(7, 7);
 		stage5.playerLocations = new Point[]{new Point(0, 14), new Point(7, 14),
 				new Point(14, 14)};
-		stage5.mudLocations = new Point[]{new Point(0, 1), new Point(0, 3), new Point(0, 5),
+		stage5.rockLocations = new Point[]{new Point(0, 1), new Point(0, 3), new Point(0, 5),
 				new Point(0, 13), new Point(1, 1), new Point(1, 3), new Point(1, 6),
 				new Point(1, 11), new Point(2, 2), new Point(2, 3), new Point(2, 4),
 				new Point(2, 7), new Point(2, 10), new Point(2, 11), new Point(2, 12),
@@ -173,8 +173,8 @@ public class HTPStage {
 		return playerLocations;
 	}
 
-	public Point[] getMudLocations() {
-		return mudLocations;
+	public Point[] getRockLocations() {
+		return rockLocations;
 	}
 
 	public Point[] getEnemyLocations() {
