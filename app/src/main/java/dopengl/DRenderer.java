@@ -23,8 +23,8 @@ public abstract class DRenderer implements Renderer {
 	 * Temporary matrix to reuse (Eg. array copy and pass as parameter).
 	 */
 	private final float[] tempMatrix = new float[16];
-	private volatile int screenWidth;
-	private volatile int screenHeight;
+	private int screenWidth;
+	private int screenHeight;
 
 	public DRenderer(Context context) {
 		//NOTE: don't do anything with OpenGL in the constructor, it won't work - do all of it on the openGL thread which is executing in onSurfaceCreated...

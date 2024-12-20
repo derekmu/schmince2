@@ -11,6 +11,7 @@ import texample.GLTextType;
 import thed.Alignment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,71 +21,81 @@ import java.util.List;
 public class GameCreateModule implements GUIModule {
 	private List<GUIItem> gameCreateItems = new ArrayList<>();
 	private Panel panelDark = new Panel();
-	private Label labelPlayerCount = new Label("Survivor Count");
-	private PlayerCountButton[] playerCountButtons;
-	private Label labelMapSize = new Label("World Size");
-	private MapSizeButton[] mapSizeButtons;
-	private Label labelEnemyPer = new Label("Enemy Count");
-	private EnemyPerSlider sliderEnemyPer;
-	private Label labelItemPer = new Label("Item Count");
-	private ItemPerSlider sliderItemPer;
+	private Label labelSurvivors = new Label("Survivors");
+	private SurvivorCountButton[] survivorCountButtons;
+	private Label labelWorldSize = new Label("World");
+	private WorldSizeButton[] worldSizeButtons;
+	private Label labelEnemies = new Label("Enemies");
+	private EnemyCountButton[] enemyCountButtons;
+	private Label labelItems = new Label("Items");
+	private ItemCountButton[] itemCountButtons;
 
-	private CreateGameButton createGameButton = new CreateGameButton(this);
+	private StartGameButton startGameButton = new StartGameButton(this);
 
 	private SchminceGame game;
-	private int playerCount = 6;
+	private int survivorCount = 6;
 	private int mapSize = 100;
-	private int itemPer = 30;
-	private int enemyPer = 10;
+	private int itemCount = 30;
+	private int enemyCount = 10;
 
 	public GameCreateModule() {
 		panelDark.Color.set(0f, 0f, 0f, 0.35f);
 		gameCreateItems.add(panelDark);
 
-		labelPlayerCount.Align = Alignment.Center;
-		labelPlayerCount.TextType = GLTextType.SansBold;
-		gameCreateItems.add(labelPlayerCount);
+		labelSurvivors.Align = Alignment.Center;
+		labelSurvivors.TextType = GLTextType.SansBold;
+		gameCreateItems.add(labelSurvivors);
 
-		playerCountButtons = new PlayerCountButton[C.MAX_PLAYER_COUNT];
-		for (int i = 0; i < playerCountButtons.length; i++) {
-			PlayerCountButton button = playerCountButtons[i] = new PlayerCountButton(i + 1, this);
+		survivorCountButtons = new SurvivorCountButton[C.MAX_SURVIVOR_COUNT];
+		for (int i = 0; i < survivorCountButtons.length; i++) {
+			SurvivorCountButton button = survivorCountButtons[i] = new SurvivorCountButton(i + 1, this);
 			gameCreateItems.add(button);
 		}
 
-		labelMapSize.Align = Alignment.Center;
-		labelMapSize.TextType = GLTextType.SansBold;
-		gameCreateItems.add(labelMapSize);
+		labelWorldSize.Align = Alignment.Center;
+		labelWorldSize.TextType = GLTextType.SansBold;
+		gameCreateItems.add(labelWorldSize);
 
-		mapSizeButtons = new MapSizeButton[C.MAX_MAP_SIZE / 25];
-		for (int i = 0; i < mapSizeButtons.length; i++) {
-			MapSizeButton button = mapSizeButtons[i] = new MapSizeButton((i + 1) * 25, this);
-			gameCreateItems.add(button);
-		}
+		worldSizeButtons = new WorldSizeButton[]{
+				new WorldSizeButton(25, "Tiny", this),
+				new WorldSizeButton(50, "Small", this),
+				new WorldSizeButton(100, "Normal", this),
+				new WorldSizeButton(150, "Big", this),
+				new WorldSizeButton(200, "Huge", this),
+				new WorldSizeButton(300, "Vast", this),
+		};
+		gameCreateItems.addAll(Arrays.asList(worldSizeButtons));
 
-		createGameButton.TextType = GLTextType.SansBold;
-		gameCreateItems.add(createGameButton);
+		startGameButton.TextType = GLTextType.SansBold;
+		gameCreateItems.add(startGameButton);
 
-		labelEnemyPer.Align = Alignment.Center;
-		labelEnemyPer.TextType = GLTextType.SansBold;
-		gameCreateItems.add(labelEnemyPer);
+		labelEnemies.Align = Alignment.Center;
+		labelEnemies.TextType = GLTextType.SansBold;
+		gameCreateItems.add(labelEnemies);
 
-		sliderEnemyPer = new EnemyPerSlider(this);
-		sliderEnemyPer.Value = enemyPer;
-		sliderEnemyPer.Minimum = 0;
-		sliderEnemyPer.Maximum = 20;
-		sliderEnemyPer.Color.set(1f, 0f, 1f, 1f);
-		gameCreateItems.add(sliderEnemyPer);
+		enemyCountButtons = new EnemyCountButton[]{
+				new EnemyCountButton(0, "None", this),
+				new EnemyCountButton(5, "Few", this),
+				new EnemyCountButton(10, "Normal", this),
+				new EnemyCountButton(15, "A lot", this),
+				new EnemyCountButton(20, "Many", this),
+				new EnemyCountButton(30, "Swarm", this),
+		};
+		gameCreateItems.addAll(Arrays.asList(enemyCountButtons));
 
-		labelItemPer.Align = Alignment.Center;
-		labelItemPer.TextType = GLTextType.SansBold;
-		gameCreateItems.add(labelItemPer);
+		labelItems.Align = Alignment.Center;
+		labelItems.TextType = GLTextType.SansBold;
+		gameCreateItems.add(labelItems);
 
-		sliderItemPer = new ItemPerSlider(this);
-		sliderItemPer.Value = itemPer;
-		sliderItemPer.Minimum = 0;
-		sliderItemPer.Maximum = 60;
-		sliderItemPer.Color.set(0f, 0f, 0.7f);
-		gameCreateItems.add(sliderItemPer);
+		itemCountButtons = new ItemCountButton[]{
+				new ItemCountButton(0, "None", this),
+				new ItemCountButton(10, "Scarce", this),
+				new ItemCountButton(30, "Normal", this),
+				new ItemCountButton(40, "Plenty", this),
+				new ItemCountButton(50, "Many", this),
+				new ItemCountButton(60, "Abundant", this),
+		};
+		gameCreateItems.addAll(Arrays.asList(itemCountButtons));
 
 		gameCreateItems = Collections.unmodifiableList(gameCreateItems);
 	}
@@ -93,27 +104,27 @@ public class GameCreateModule implements GUIModule {
 	public void update(int screenWidth, int screenHeight, GLTextCache textCache) {
 		panelDark.Bounds.set(0, 0, screenWidth, screenHeight);
 
-		float w = createGameButton.getGLText(textCache).getLength(createGameButton.Text) * 1.25f;
-		float h = createGameButton.getGLText(textCache).getHeight() * 1.25f;
-		createGameButton.Bounds.set(screenWidth - w, 0, w, h);
+		float w = startGameButton.getGLText(textCache).getLength(startGameButton.Text) * 1.25f;
+		float h = startGameButton.getGLText(textCache).getHeight() * 1.25f;
+		startGameButton.Bounds.set(screenWidth - w, 0, w, h);
 
-		float xLeft = labelPlayerCount.getGLText(textCache).getLength(labelPlayerCount.Text) * 1.1f;
-		h = labelPlayerCount.getGLText(textCache).getHeight();
+		float xLeft = labelSurvivors.getGLText(textCache).getLength(labelSurvivors.Text) * 1.1f;
+		h = labelSurvivors.getGLText(textCache).getHeight();
 		float y = screenHeight - h - 10;
-		labelPlayerCount.Bounds.set(0, y, xLeft, h);
+		labelSurvivors.Bounds.set(0, y, xLeft, h);
 
 		float x = xLeft;
 		y += h;
-		h = playerCountButtons[0].getGLText(textCache).getHeight();
+		h = survivorCountButtons[0].getGLText(textCache).getHeight();
 		y -= h;
 		w = (screenWidth - xLeft - 5) / 6;
-		for (PlayerCountButton button : playerCountButtons) {
+		for (SurvivorCountButton button : survivorCountButtons) {
 			if (x + w > screenWidth) {
 				x = xLeft;
 				y -= h + 5;
 			}
-			if (button.getPlayerCount() == playerCount) {
-				button.NormalColor.set(0, 1, 0);
+			if (button.getSurvivorCount() == survivorCount) {
+				button.NormalColor.set(0, 0.5f, 0);
 			} else {
 				button.NormalColor.set(0, 0, 1);
 			}
@@ -121,22 +132,22 @@ public class GameCreateModule implements GUIModule {
 			x += w;
 		}
 
-		h = labelMapSize.getGLText(textCache).getHeight();
+		h = labelWorldSize.getGLText(textCache).getHeight();
 		y -= h + 20;
-		labelMapSize.Bounds.set(0, y, xLeft, h);
+		labelWorldSize.Bounds.set(0, y, xLeft, h);
 
 		x = xLeft;
 		y += h;
-		h = mapSizeButtons[0].getGLText(textCache).getHeight();
+		h = worldSizeButtons[0].getGLText(textCache).getHeight();
 		y -= h;
-		w = (screenWidth - xLeft - 5) / (mapSizeButtons.length / 2f);
-		for (MapSizeButton button : mapSizeButtons) {
+		w = (screenWidth - xLeft - 5) / (worldSizeButtons.length / 2f);
+		for (WorldSizeButton button : worldSizeButtons) {
 			if (x + w > screenWidth) {
 				x = xLeft;
 				y -= h + 5;
 			}
 			if (button.getMapSize() == mapSize) {
-				button.NormalColor.set(0, 1, 0);
+				button.NormalColor.set(0, 0.5f, 0);
 			} else {
 				button.NormalColor.set(0, 0, 1);
 			}
@@ -144,21 +155,51 @@ public class GameCreateModule implements GUIModule {
 			x += w;
 		}
 
-		h = labelEnemyPer.getGLText(textCache).getHeight();
+		h = labelEnemies.getGLText(textCache).getHeight();
 		y -= h + 20;
-		labelEnemyPer.Bounds.set(0, y, xLeft, h);
+		labelEnemies.Bounds.set(0, y, xLeft, h);
 
 		x = xLeft;
-		w = (screenWidth - xLeft - 5);
-		sliderEnemyPer.Bounds.set(x, y, w, h);
+		y += h;
+		h = enemyCountButtons[0].getGLText(textCache).getHeight();
+		y -= h;
+		w = (screenWidth - xLeft - 5) / (enemyCountButtons.length / 2f);
+		for (EnemyCountButton button : enemyCountButtons) {
+			if (x + w > screenWidth) {
+				x = xLeft;
+				y -= h + 5;
+			}
+			if (button.getEnemyCount() == enemyCount) {
+				button.NormalColor.set(0, 0.5f, 0);
+			} else {
+				button.NormalColor.set(0, 0, 1);
+			}
+			button.Bounds.set(x, y, w - 5, h);
+			x += w;
+		}
 
-		h = labelItemPer.getGLText(textCache).getHeight();
+		h = labelItems.getGLText(textCache).getHeight();
 		y -= h + 20;
-		labelItemPer.Bounds.set(0, y, xLeft, h);
+		labelItems.Bounds.set(0, y, xLeft, h);
 
 		x = xLeft;
-		w = (screenWidth - xLeft - 5);
-		sliderItemPer.Bounds.set(x, y, w, h);
+		y += h;
+		h = itemCountButtons[0].getGLText(textCache).getHeight();
+		y -= h;
+		w = (screenWidth - xLeft - 5) / (itemCountButtons.length / 2f);
+		for (ItemCountButton button : itemCountButtons) {
+			if (x + w > screenWidth) {
+				x = xLeft;
+				y -= h + 5;
+			}
+			if (button.getItemCount() == itemCount) {
+				button.NormalColor.set(0, 0.5f, 0);
+			} else {
+				button.NormalColor.set(0, 0, 1);
+			}
+			button.Bounds.set(x, y, w - 5, h);
+			x += w;
+		}
 	}
 
 	@Override
@@ -170,23 +211,23 @@ public class GameCreateModule implements GUIModule {
 		this.game = game;
 	}
 
-	public void setPlayerCount(int playerCount) {
-		this.playerCount = playerCount;
+	public void setSurvivorCount(int survivorCount) {
+		this.survivorCount = survivorCount;
 	}
 
 	public void setMapSize(int mapSize) {
 		this.mapSize = mapSize;
 	}
 
-	public void setEnemyPer(int enemyPer) {
-		this.enemyPer = enemyPer;
+	public void setEnemyCount(int enemyCount) {
+		this.enemyCount = enemyCount;
 	}
 
-	public void setItemPer(int itemPer) {
-		this.itemPer = itemPer;
+	public void setItemCount(int itemCount) {
+		this.itemCount = itemCount;
 	}
 
 	public void createGame() {
-		game.onCreateGame(playerCount, mapSize, itemPer, enemyPer);
+		game.onCreateGame(survivorCount, mapSize, itemCount, enemyCount);
 	}
 }

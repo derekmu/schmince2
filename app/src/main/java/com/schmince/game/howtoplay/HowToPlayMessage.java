@@ -5,11 +5,11 @@ package com.schmince.game.howtoplay;
  *
  * @author Derek Mulvihill - Mar 15, 2014
  */
-public class HTPMessage {
+public class HowToPlayMessage {
 	private boolean isTitle;
 	private String[] messages;
 
-	public HTPMessage(boolean title, String... messages) {
+	public HowToPlayMessage(boolean title, String... messages) {
 		this.isTitle = title;
 		this.messages = messages;
 	}

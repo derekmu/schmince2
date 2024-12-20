@@ -7,7 +7,7 @@ import dopengl.shapes.GLRock;
  * @author Derek Mulvihill - Jan 18, 2014
  */
 public class Rock extends SObject {
-	private volatile int health;
+	private int health;
 	private final double angleOffset;
 
 	public Rock(float sample) {
@@ -23,8 +23,8 @@ public class Rock extends SObject {
 	}
 
 	@Override
-	public void interact(Player player) {
-		if (player.getItem() == ItemType.Pick) {
+	public void interact(Survivor survivor) {
+		if (survivor.getItem() == ItemType.Pick) {
 			health = 0;
 		} else {
 			health -= 1;

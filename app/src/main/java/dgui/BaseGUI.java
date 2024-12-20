@@ -183,7 +183,7 @@ public abstract class BaseGUI implements DInputHandler {
 	/**
 	 * The unique action allows the game to receive many actions as a touch gesture moves across the screen.<br>
 	 * Only one touch gesture registers as a unique action.<br>
-	 * Eg. In a game where the player can move around, dragging a touch across the screen might be interpreted as selecting the location to move to.
+	 * Eg. In a game where the survivor can move around, dragging a touch across the screen might be interpreted as selecting the location to move to.
 	 */
 	protected abstract void uniqueAction(float worldX, float worldY);
 

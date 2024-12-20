@@ -21,11 +21,11 @@ public enum UserEventType {
 	/**
 	 * user wants to go to the next message or stage on the tutorial
 	 */
-	NextHTP(GameState.HowToPlay),
+	NextHowToPlay(GameState.HowToPlay),
 	/**
 	 * user selected to control a different character in game
 	 */
-	SelectPlayer(GameState.InGame, GameState.HowToPlay),
+	SelectSurvivor(GameState.InGame, GameState.HowToPlay),
 	/**
 	 * user selected to use the item of the currently controlled character in game
 	 */

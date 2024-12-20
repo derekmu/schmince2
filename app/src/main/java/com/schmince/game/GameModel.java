@@ -2,8 +2,8 @@ package com.schmince.game;
 
 import android.graphics.Point;
 import com.schmince.C;
-import com.schmince.game.howtoplay.HTPMessage;
-import com.schmince.game.howtoplay.HTPStage;
+import com.schmince.game.howtoplay.HowToPlayMessage;
+import com.schmince.game.howtoplay.HowToPlayStage;
 import com.schmince.game.model.*;
 import com.schmince.game.model.sprites.GunSprite;
 import com.schmince.game.model.sprites.MedkitSprite;
@@ -20,21 +20,21 @@ import java.util.List;
  * @author Derek Mulvihill - Jan 17, 2014
  */
 public class GameModel implements GameModelInterface {
-	private final int playerCount;
+	private final int survivorCount;
 	private final int mapSize;
 	private final SBlock[][] blocks;
 	private final PathFinder pathFinder;
 	private final LOSFinder losFinder;
-	private final Player[] players;
+	private final Survivor[] survivors;
 	private final List<Enemy> enemies = new ArrayList<>();
 	private final List<SoundEvent> soundEvents = new ArrayList<>();
 	private final List<Sprite> sprites = new ArrayList<>();
-	private volatile int selectedPlayer = 0;
-	private HTPStage htpStage;
-	private int htpMessageIndex;
+	private int selectedSurvivorIndex = 0;
+	private HowToPlayStage howToPlayStage;
+	private int howToPlayMessageIndex;
 
-	public GameModel(int playerCount, int mapSize, int enemyPer, int itemPer) {
-		this.playerCount = playerCount;
+	public GameModel(int survivorCount, int mapSize, int enemyCount, int itemCount) {
+		this.survivorCount = survivorCount;
 		this.mapSize = mapSize;
 
 		int shipX = Math.min(mapSize - 2 - C.SHIP_SIZE,
@@ -49,7 +49,7 @@ public class GameModel implements GameModelInterface {
 		for (int i = 0; i < blocks.length; i++) {
 			SBlock[] blocker = blocks[i] = new SBlock[mapSize];
 			for (int j = 0; j < blocker.length; j++) {
-				SBlock block = blocker[j] = new SBlock(i, j, playerCount);
+				SBlock block = blocker[j] = new SBlock(i, j, survivorCount);
 				int dx = shipX - i;
 				int dy = shipY - j;
 				if (Math.abs(dx) <= C.SHIP_SIZE && Math.abs(dy) <= C.SHIP_SIZE) {
@@ -76,7 +76,6 @@ public class GameModel implements GameModelInterface {
 				if (sample > 0) {
 					Rock wall = new Rock(sample);
 					block.setObject(wall);
-					continue;
 				}
 			}
 		}
@@ -84,9 +83,9 @@ public class GameModel implements GameModelInterface {
 		this.pathFinder = new PathFinder(blocks, mapSize);
 		this.losFinder = new LOSFinder(blocks);
 
-		this.players = new Player[playerCount];
-		for (int i = 0; i < playerCount; i++) {
-			Player player = players[i] = new Player(C.PLAYER_COLORS[i], i);
+		this.survivors = new Survivor[survivorCount];
+		for (int i = 0; i < survivorCount; i++) {
+			Survivor survivor = this.survivors[i] = new Survivor(C.SURVIVOR_COLORS[i], i);
 			int x;
 			int y;
 			do {
@@ -94,11 +93,11 @@ public class GameModel implements GameModelInterface {
 				y = DRandom.get().nextInt(mapSize);
 			} while (blocks[x][y].getObject() != null
 					|| blocks[x][y].BlockType == SBlockType.ShipFloor);
-			blocks[x][y].setObject(player);
+			blocks[x][y].setObject(survivor);
 		}
 
 		ItemType[] itemTypes = ItemType.values();
-		int itemCount = (int) ((mapSize * mapSize) / 1000f * itemPer);
+		itemCount = (int) ((mapSize * mapSize) / 1000f * itemCount);
 		for (int i = 0; i < itemCount; i++) {
 			Item item = new Item(itemTypes[i % itemTypes.length]);
 			int x;
@@ -111,44 +110,44 @@ public class GameModel implements GameModelInterface {
 			blocks[x][y].setObject(item);
 		}
 
-		int enemyCount = (int) ((mapSize * mapSize) / 1000f * enemyPer);
+		enemyCount = (int) ((mapSize * mapSize) / 1000f * enemyCount);
 		for (int i = 0; i < enemyCount; i++) {
 			Enemy enemy = new Enemy();
 			int x;
 			int y;
-			boolean hasPlayerLOS;
+			boolean hasSurvivorLOS;
 			int loopRestriction = 0;
 			do {
 				x = DRandom.get().nextInt(mapSize);
 				y = DRandom.get().nextInt(mapSize);
-				hasPlayerLOS = false;
-				for (Player player : players) {
-					if (losFinder.hasLOS(x, y, player.getX(), player.getY())) {
-						hasPlayerLOS = true;
+				hasSurvivorLOS = false;
+				for (Survivor survivor : this.survivors) {
+					if (losFinder.hasLOS(x, y, survivor.getX(), survivor.getY())) {
+						hasSurvivorLOS = true;
 						break;
 					}
 				}
 				loopRestriction++;
-			} while ((blocks[x][y].getObject() != null || hasPlayerLOS) && loopRestriction < 1000);
+			} while ((blocks[x][y].getObject() != null || hasSurvivorLOS) && loopRestriction < 1000);
 
 			if (loopRestriction < 1000) {
 				blocks[x][y].setObject(enemy);
-				enemies.add(enemy);
+				this.enemies.add(enemy);
 			}
 		}
 	}
 
-	public GameModel(HTPStage stage, int messageIndex) {
-		this.htpStage = stage;
-		this.htpMessageIndex = messageIndex;
-		this.playerCount = stage.getPlayerLocations().length;
+	public GameModel(HowToPlayStage stage, int messageIndex) {
+		this.howToPlayStage = stage;
+		this.howToPlayMessageIndex = messageIndex;
+		this.survivorCount = stage.getSurvivorLocations().length;
 		this.mapSize = stage.getMapSize();
 
 		blocks = new SBlock[mapSize][];
 		for (int i = 0; i < blocks.length; i++) {
 			SBlock[] blocker = blocks[i] = new SBlock[mapSize];
 			for (int j = 0; j < blocker.length; j++) {
-				SBlock block = blocker[j] = new SBlock(i, j, playerCount);
+				SBlock block = blocker[j] = new SBlock(i, j, survivorCount);
 				if (stage.getShipLocation() != null) {
 					int dx = stage.getShipLocation().x - i;
 					int dy = stage.getShipLocation().y - j;
@@ -165,7 +164,6 @@ public class GameModel implements GameModelInterface {
 						} else {
 							block.BlockType = SBlockType.ShipFloor;
 						}
-						continue;
 					}
 				}
 			}
@@ -182,12 +180,12 @@ public class GameModel implements GameModelInterface {
 			blocks[x][y].setObject(rock);
 		}
 
-		this.players = new Player[playerCount];
-		for (int i = 0; i < playerCount; i++) {
-			Player player = players[i] = new Player(C.PLAYER_COLORS[i], i);
-			int x = stage.getPlayerLocations()[i].x;
-			int y = stage.getPlayerLocations()[i].y;
-			blocks[x][y].setObject(player);
+		this.survivors = new Survivor[survivorCount];
+		for (int i = 0; i < survivorCount; i++) {
+			Survivor survivor = survivors[i] = new Survivor(C.SURVIVOR_COLORS[i], i);
+			int x = stage.getSurvivorLocations()[i].x;
+			int y = stage.getSurvivorLocations()[i].y;
+			blocks[x][y].setObject(survivor);
 		}
 
 		int itemCount = stage.getItemLocations().length;
@@ -208,14 +206,6 @@ public class GameModel implements GameModelInterface {
 		}
 	}
 
-	private Player getSelectedPlayer() {
-		return players[selectedPlayer];
-	}
-
-	public void setSelectedPlayer(int selectedPlayer) {
-		this.selectedPlayer = selectedPlayer;
-	}
-
 	public void worldSelected(float worldX, float worldY) {
 		int x = Math.round(worldX);
 		int y = Math.round(worldY);
@@ -223,16 +213,16 @@ public class GameModel implements GameModelInterface {
 			return;
 		}
 		SBlock block = blocks[x][y];
-		if (block.getObject() != null && block.getObject() != getSelectedPlayer()
+		if (block.getObject() != null && block.getObject() != getSelectedSurvivor()
 				&& !block.getObject().isInteractable()) {
-			Point pt = findNearestUnoccupied(getSelectedPlayer().getX(),
-					getSelectedPlayer().getY(), x, y);
+			Point pt = findNearestUnoccupied(getSelectedSurvivor().getX(),
+					getSelectedSurvivor().getY(), x, y);
 			if (pt != null) {
 				x = pt.x;
 				y = pt.y;
 			}
 		}
-		getSelectedPlayer().setTarget(x, y, this);
+		getSelectedSurvivor().setTarget(x, y, this);
 	}
 
 	private Point findNearestUnoccupied(final int px, final int py, final int x, final int y) {
@@ -300,11 +290,11 @@ public class GameModel implements GameModelInterface {
 	}
 
 	public void useItem() {
-		getSelectedPlayer().useItem(this);
+		getSelectedSurvivor().useItem(this);
 	}
 
-	public Player getPlayer(int i) {
-		return players[i];
+	public Survivor getSurvivor(int i) {
+		return survivors[i];
 	}
 
 	public List<SoundEvent> getSoundEvents() {
@@ -312,9 +302,9 @@ public class GameModel implements GameModelInterface {
 	}
 
 	private void makeRelativeSound(SoundEventType eventType, int x, int y) {
-		Player player = getSelectedPlayer();
-		int dx = player.getX() - x;
-		int dy = player.getY() - y;
+		Survivor survivor = getSelectedSurvivor();
+		int dx = survivor.getX() - x;
+		int dy = survivor.getY() - y;
 		if (Math.sqrt(dx * dx + dy * dy) < 8) {
 			SoundEvent event = new SoundEvent(eventType);
 			event.RightVolume = event.LeftVolume = (float) Math.max(0,
@@ -327,38 +317,38 @@ public class GameModel implements GameModelInterface {
 		makeRelativeSound(SoundEventType.EnemyMoved, enemy.getX(), enemy.getY());
 	}
 
-	public void onPlayerMoved(Player mover) {
-		makeRelativeSound(SoundEventType.PlayerMoved, mover.getX(), mover.getY());
+	public void onSurvivorMoved(Survivor mover) {
+		makeRelativeSound(SoundEventType.SurvivorMoved, mover.getX(), mover.getY());
 	}
 
-	public void onAttackPlayer(Enemy enemy, Player chasePlayer) {
+	public void onAttackSurvivor(Enemy enemy, Survivor chaseSurvivor) {
 		SoundEventType eventType = SoundEventType.Hit;
-		if (chasePlayer.getItem() == ItemType.Armor) {
+		if (chaseSurvivor.getItem() == ItemType.Armor) {
 			eventType = SoundEventType.ArmorHit;
-			chasePlayer.setHealth(chasePlayer.getHealth() - 1);
+			chaseSurvivor.setHealth(chaseSurvivor.getHealth() - 1);
 		} else {
-			chasePlayer.setHealth(chasePlayer.getHealth() - 2);
+			chaseSurvivor.setHealth(chaseSurvivor.getHealth() - 2);
 		}
-		makeRelativeSound(eventType, chasePlayer.getX(), chasePlayer.getY());
+		makeRelativeSound(eventType, chaseSurvivor.getX(), chaseSurvivor.getY());
 	}
 
-	public void onGunShot(Player player, Enemy enemy) {
+	public void onGunShot(Survivor survivor, Enemy enemy) {
 		enemy.setDead(true);
 		enemies.remove(enemy);
-		newSprite(new GunSprite(player.getX(), player.getY(), enemy.getX(), enemy.getY()));
-		makeRelativeSound(SoundEventType.GunShot, player.getX(), player.getY());
+		newSprite(new GunSprite(survivor.getX(), survivor.getY(), enemy.getX(), enemy.getY()));
+		makeRelativeSound(SoundEventType.GunShot, survivor.getX(), survivor.getY());
 	}
 
-	public void onMedkitUsed(Player player) {
-		newSprite(new MedkitSprite(player.getX(), player.getY()));
+	public void onMedkitUsed(Survivor survivor) {
+		newSprite(new MedkitSprite(survivor.getX(), survivor.getY()));
 		soundEvents.add(new SoundEvent(SoundEventType.Medkit));
 	}
 
-	public void onRadarUsed(Player player) {
+	public void onRadarUsed(Survivor survivor) {
 		soundEvents.add(new SoundEvent(SoundEventType.Radar));
 	}
 
-	public void onFlareUsed(Player player) {
+	public void onFlareUsed(Survivor survivor) {
 		soundEvents.add(new SoundEvent(SoundEventType.Flare));
 	}
 
@@ -366,11 +356,11 @@ public class GameModel implements GameModelInterface {
 		soundEvents.add(new SoundEvent(SoundEventType.Error));
 	}
 
-	public boolean nextHTPMessage() {
-		if (htpMessageIndex + 1 >= htpStage.getMessages().length) {
+	public boolean nextHowToPlayMessage() {
+		if (howToPlayMessageIndex + 1 >= howToPlayStage.getMessages().length) {
 			return false;
 		}
-		htpMessageIndex++;
+		howToPlayMessageIndex++;
 		return true;
 	}
 
@@ -390,8 +380,8 @@ public class GameModel implements GameModelInterface {
 
 	@Override
 	public void predrawObjects() {
-		for (Player player : players) {
-			player.predraw();
+		for (Survivor survivor : survivors) {
+			survivor.predraw();
 		}
 		for (Enemy enemy : enemies) {
 			enemy.predraw();
@@ -418,54 +408,62 @@ public class GameModel implements GameModelInterface {
 	}
 
 	@Override
-	public int getPlayerCount() {
-		return playerCount;
+	public int getSurvivorCount() {
+		return survivorCount;
+	}
+
+	private Survivor getSelectedSurvivor() {
+		return survivors[selectedSurvivorIndex];
+	}
+
+	public void setSelectedSurvivorIndex(int selectedSurvivorIndex) {
+		this.selectedSurvivorIndex = selectedSurvivorIndex;
 	}
 
 	@Override
-	public int getSelectedPlayerIndex() {
-		return selectedPlayer;
+	public int getSelectedSurvivorIndex() {
+		return selectedSurvivorIndex;
 	}
 
 	@Override
-	public int getPlayerX(int i) {
-		return players[i].getX();
+	public int getSurvivorX(int i) {
+		return survivors[i].getX();
 	}
 
 	@Override
-	public int getPlayerY(int i) {
-		return players[i].getY();
+	public int getSurvivorY(int i) {
+		return survivors[i].getY();
 	}
 
 	@Override
 	public boolean isLocating() {
-		return getSelectedPlayer().isLocating();
+		return getSelectedSurvivor().isLocating();
 	}
 
 	@Override
 	public boolean isFlared() {
-		return getSelectedPlayer().isFlared();
+		return getSelectedSurvivor().isFlared();
 	}
 
 	@Override
 	public ItemType getItem() {
-		return getSelectedPlayer().getItem();
+		return getSelectedSurvivor().getItem();
 	}
 
 	@Override
-	public boolean isPlayerAlert(int i) {
-		return players[i].isAlert();
+	public boolean isSurivorAlert(int i) {
+		return survivors[i].isAlert();
 	}
 
 	@Override
-	public int getPlayerHealth(int i) {
-		return players[i].getHealth();
+	public int getSurvivorHealth(int i) {
+		return survivors[i].getHealth();
 	}
 
 	@Override
-	public HTPMessage getHTPMessage() {
-		if (htpStage != null) {
-			return htpStage.getMessages()[htpMessageIndex];
+	public HowToPlayMessage getHowToPlayMessage() {
+		if (howToPlayStage != null) {
+			return howToPlayStage.getMessages()[howToPlayMessageIndex];
 		}
 		return null;
 	}

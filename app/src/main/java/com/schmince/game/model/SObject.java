@@ -10,7 +10,7 @@ public abstract class SObject {
 
 	public abstract void draw(SchminceRenderer renderer, SBlock block, boolean cantSee);
 
-	public abstract void interact(Player player);
+	public abstract void interact(Survivor survivor);
 
 	public void onNewBlock(SBlock block) {
 		this.currentBlock = block;

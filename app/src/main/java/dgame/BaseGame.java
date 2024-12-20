@@ -13,48 +13,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class BaseGame<T> implements PauseProvider {
 	private final AtomicBoolean running = new AtomicBoolean(true);
 	private UserEventStore<T> userEvent = new UserEventStore<>();
-	private volatile Thread gameThread = null;
-	private BaseActivity activity;
-	private volatile long pauseOffset = 0;
-	private volatile long pauseStart = 0;
-	private volatile int pauseCount = 0;
+	private long pauseOffset = 0;
+	private long pauseStart = 0;
+	private int pauseCount = 0;
 
-	public BaseGame(BaseActivity activity) {
-		this.activity = activity;
-	}
-
-	public final void start() {
-		if (gameThread == null) {
-			gameThread = new Thread(() -> {
-				DTimer.get().setPauseProvider(BaseGame.this);
-				BaseGame.this.gameLoop();
-			});
-			gameThread.start();
-		} else {
-			throw new RuntimeException("Game is already started");
-		}
-	}
-
-	private void gameLoop() {
-		while (running.get() && !activity.isDestroyed()) {
-			DTimer.get().update();
-			updateUserEventStore();
-			if ((pauseStart != 0)) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException ex) {
-					throw new RuntimeException(ex); //does this really ever happen?
-				}
-				continue;
-			}
-			if (DTimer.get().change() == 0) {
-				try {
-					Thread.sleep(1);
-				} catch (InterruptedException ex) {
-					throw new RuntimeException(ex); //does this really ever happen?
-				}
-				continue;
-			}
+	public void tick() {
+		updateUserEventStore();
+		if (running.get() && pauseStart == 0) {
 			gameStep();
 		}
 	}

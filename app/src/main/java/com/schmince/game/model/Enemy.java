@@ -21,7 +21,7 @@ public class Enemy extends SObject {
 
 	private long lastMoveMilli = DTimer.get().millis() + DRandom.get().nextInt(MOVE_MILLI);
 
-	private volatile boolean dead = false;
+	private boolean dead = false;
 
 	private List<Point> openPath = new ArrayList<>();
 
@@ -36,37 +36,37 @@ public class Enemy extends SObject {
 
 		lastMoveMilli = DTimer.get().millis();
 
-		if (chasePlayer(gameModel)) {
+		if (chaseSurvivor(gameModel)) {
 			return;
 		}
 
 		moveRandom(gameModel);
 	}
 
-	private boolean chasePlayer(GameModel gameModel) {
-		Player chasePlayer = null;
+	private boolean chaseSurvivor(GameModel gameModel) {
+		Survivor chaseSurvivor = null;
 		float mind = 100000000;
 
-		for (int i = 0; i < gameModel.getPlayerCount(); i++) {
-			Player player = gameModel.getPlayer(i);
-			if (player.getHealth() > 0
-					&& gameModel.los().hasLOS(getX(), getY(), player.getX(), player.getY())) {
-				int dx = player.getX() - getX();
-				int dy = player.getY() - getY();
+		for (int i = 0; i < gameModel.getSurvivorCount(); i++) {
+			Survivor survivor = gameModel.getSurvivor(i);
+			if (survivor.getHealth() > 0
+					&& gameModel.los().hasLOS(getX(), getY(), survivor.getX(), survivor.getY())) {
+				int dx = survivor.getX() - getX();
+				int dy = survivor.getY() - getY();
 				float d = (float) Math.sqrt(dx * dx + dy * dy);
 				if (d < mind) {
 					mind = d;
-					chasePlayer = player;
+					chaseSurvivor = survivor;
 				}
 			}
 		}
 
-		if (chasePlayer != null) {
-			if (Math.abs(chasePlayer.getX() - getX()) <= 1 && Math.abs(chasePlayer.getY() - getY()) <= 1) {
-				gameModel.onAttackPlayer(this, chasePlayer);
+		if (chaseSurvivor != null) {
+			if (Math.abs(chaseSurvivor.getX() - getX()) <= 1 && Math.abs(chaseSurvivor.getY() - getY()) <= 1) {
+				gameModel.onAttackSurvivor(this, chaseSurvivor);
 				return true;
 			} else {
-				List<Point> path = gameModel.path().findPath(getX(), getY(), chasePlayer.getX(), chasePlayer.getY(), false, false, -1);
+				List<Point> path = gameModel.path().findPath(getX(), getY(), chaseSurvivor.getX(), chaseSurvivor.getY(), false, false, -1);
 				if (path.size() >= 2) {
 					Point next = path.get(1); //0 will be the current location
 					if (next != null) {
@@ -161,7 +161,7 @@ public class Enemy extends SObject {
 	}
 
 	@Override
-	public void interact(Player player) {
+	public void interact(Survivor survivor) {
 		//nothing for now?
 	}
 

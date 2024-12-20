@@ -8,7 +8,7 @@ import dopengl.drawable.GLDrawableProvider;
  */
 public enum GLIconType implements GLDrawableProvider {
 	Enemy(GLEnemy.class),
-	Player(GLPlayer.class),
+	Survivor(GLSurvivor.class),
 	Title(GLTitle.class),
 	//
 	;

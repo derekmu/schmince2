@@ -6,10 +6,10 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.util.Log;
 import com.schmince.C;
-import com.schmince.game.howtoplay.HTPStage;
+import com.schmince.game.howtoplay.HowToPlayStage;
 import com.schmince.game.model.Enemy;
-import com.schmince.game.model.Player;
 import com.schmince.game.model.SBlockType;
+import com.schmince.game.model.Survivor;
 import dgame.BaseActivity;
 import dgame.BaseGame;
 
@@ -23,20 +23,19 @@ import java.util.List;
 public class SchminceGame extends BaseGame<UserEventType> {
 	private final EventValues eventValues = new EventValues();
 	private final BasicOnCompletionListener ONCOMPLETELISTENER = new BasicOnCompletionListener();
-	private volatile GameState gameState = GameState.StartScreen;
-	private volatile GameModel model = new GameModel(C.MAX_PLAYER_COUNT, C.MAX_MAP_SIZE, 10, 20);
-	private HTPStage[] htpStages = HTPStage.buildHTPStages();
-	private int htpStageIndex = 0;
-	private int gameStartPlayerCount;
+	private GameState gameState = GameState.StartScreen;
+	private GameModel model = new GameModel(C.MAX_SURVIVOR_COUNT, 100, 10, 20);
+	private HowToPlayStage[] howToPlayStages = HowToPlayStage.buildHowToPlayStages();
+	private int howToPlayStageIndex = 0;
+	private int gameStartSurvivorCount;
 	private int gameStartMapSize;
-	private int gameStartItemPer;
-	private int gameStartEnemyPer;
-	private volatile int deadCount;
-	private volatile int survivorCount;
+	private int gameStartItems;
+	private int gameStartEnemies;
+	private int deadCount;
+	private int survivorCount;
 	private Context context;
 
 	public SchminceGame(BaseActivity activity) {
-		super(activity);
 		this.context = activity;
 	}
 
@@ -61,8 +60,7 @@ public class SchminceGame extends BaseGame<UserEventType> {
 				break;
 			}
 			case GameStarting: {
-				model = new GameModel(gameStartPlayerCount, gameStartMapSize, gameStartEnemyPer,
-						gameStartItemPer);
+				model = new GameModel(gameStartSurvivorCount, gameStartMapSize, gameStartEnemies, gameStartItems);
 				gameState = GameState.InGame;
 				break;
 			}
@@ -80,22 +78,22 @@ public class SchminceGame extends BaseGame<UserEventType> {
 	}
 
 	private void updateModel() {
-		int deadPlayers = 0;
-		int safePlayers = 0;
+		int deadSurvivors = 0;
+		int safeSurvivors = 0;
 
-		for (int pi = 0; pi < model.getPlayerCount(); pi++) {
-			Player player = model.getPlayer(pi);
-			if (player.getHealth() <= 0) {
-				deadPlayers++;
-			} else if (player.getCurrentBlock().BlockType == SBlockType.ShipFloor) {
-				safePlayers++;
+		for (int pi = 0; pi < model.getSurvivorCount(); pi++) {
+			Survivor survivor = model.getSurvivor(pi);
+			if (survivor.getHealth() <= 0) {
+				deadSurvivors++;
+			} else if (survivor.getCurrentBlock().BlockType == SBlockType.ShipFloor) {
+				safeSurvivors++;
 			}
-			player.update(model);
+			survivor.update(model);
 		}
 
-		if (deadPlayers + safePlayers == model.getPlayerCount()) {
-			this.deadCount = deadPlayers;
-			this.survivorCount = safePlayers;
+		if (deadSurvivors + safeSurvivors == model.getSurvivorCount()) {
+			this.deadCount = deadSurvivors;
+			this.survivorCount = safeSurvivors;
 			if (gameState == GameState.InGame) {
 				gameState = GameState.GameOver;
 			}
@@ -123,7 +121,7 @@ public class SchminceGame extends BaseGame<UserEventType> {
 	}
 
 	@Override
-	public synchronized void handleUserEvent(UserEventType type) {
+	public void handleUserEvent(UserEventType type) {
 		if (!type.isValidState(gameState)) {
 			return;
 		}
@@ -134,8 +132,8 @@ public class SchminceGame extends BaseGame<UserEventType> {
 			}
 			case HowToPlay: {
 				gameState = GameState.HowToPlay;
-				htpStageIndex = 0;
-				model = new GameModel(htpStages[htpStageIndex], 0);
+				howToPlayStageIndex = 0;
+				model = new GameModel(howToPlayStages[howToPlayStageIndex], 0);
 				break;
 			}
 			case CancelHowToPlay:
@@ -144,19 +142,19 @@ public class SchminceGame extends BaseGame<UserEventType> {
 				gameState = GameState.StartScreen;
 				break;
 			}
-			case NextHTP: {
-				if (!model.nextHTPMessage()) {
-					if (htpStageIndex + 1 >= htpStages.length) {
+			case NextHowToPlay: {
+				if (!model.nextHowToPlayMessage()) {
+					if (howToPlayStageIndex + 1 >= howToPlayStages.length) {
 						gameState = GameState.StartScreen;
 					} else {
-						htpStageIndex++;
-						model = new GameModel(htpStages[htpStageIndex], 0);
+						howToPlayStageIndex++;
+						model = new GameModel(howToPlayStages[howToPlayStageIndex], 0);
 					}
 				}
 				break;
 			}
-			case SelectPlayer: {
-				model.setSelectedPlayer(eventValues.playerIndex);
+			case SelectSurvivor: {
+				model.setSelectedSurvivorIndex(eventValues.survivorIndex);
 				break;
 			}
 			case UseItem: {
@@ -168,10 +166,10 @@ public class SchminceGame extends BaseGame<UserEventType> {
 				break;
 			}
 			case CreateGame: {
-				gameStartPlayerCount = eventValues.playerCount;
+				gameStartSurvivorCount = eventValues.survivorCount;
 				gameStartMapSize = eventValues.mapSize;
-				gameStartItemPer = eventValues.itemPer;
-				gameStartEnemyPer = eventValues.enemyPer;
+				gameStartItems = eventValues.itemPer;
+				gameStartEnemies = eventValues.enemyPer;
 				gameState = GameState.GameStarting;
 				break;
 			}
@@ -182,10 +180,9 @@ public class SchminceGame extends BaseGame<UserEventType> {
 		newEvent(UserEventType.UseItem);
 	}
 
-	public synchronized void onSelectPlayer(int playerIndex) {
-		if (newEvent(UserEventType.SelectPlayer)) {
-			eventValues.playerIndex = playerIndex;
-		}
+	public synchronized void onSelectSurvivor(int survivorindex) {
+		eventValues.survivorIndex = survivorindex;
+		handleUserEvent(UserEventType.SelectSurvivor);
 	}
 
 	public synchronized void onNewGame() {
@@ -196,8 +193,8 @@ public class SchminceGame extends BaseGame<UserEventType> {
 		newEvent(UserEventType.HowToPlay);
 	}
 
-	public synchronized void onNextHTP() {
-		newEvent(UserEventType.NextHTP);
+	public synchronized void onNextHowToPlay() {
+		newEvent(UserEventType.NextHowToPlay);
 	}
 
 	public synchronized void onCancelHowToPlay() {
@@ -219,9 +216,9 @@ public class SchminceGame extends BaseGame<UserEventType> {
 		newEvent(UserEventType.EndGameOver);
 	}
 
-	public synchronized void onCreateGame(int playerCount, int mapSize, int itemPer, int enemyPer) {
+	public synchronized void onCreateGame(int survivorCount, int mapSize, int itemPer, int enemyPer) {
 		if (newEvent(UserEventType.CreateGame)) {
-			eventValues.playerCount = playerCount;
+			eventValues.survivorCount = survivorCount;
 			eventValues.mapSize = mapSize;
 			eventValues.itemPer = itemPer;
 			eventValues.enemyPer = enemyPer;
@@ -247,11 +244,11 @@ public class SchminceGame extends BaseGame<UserEventType> {
 	 */
 	private static class EventValues {
 		volatile int mapSize;
-		volatile int playerCount;
+		volatile int survivorCount;
 		volatile int itemPer;
 		volatile int enemyPer;
 
-		volatile int playerIndex;
+		volatile int survivorIndex;
 		volatile float worldX;
 		volatile float worldY;
 	}

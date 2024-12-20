@@ -25,9 +25,9 @@ public class Item extends SObject {
 	}
 
 	@Override
-	public void interact(Player player) {
-		ItemType tempType = player.getItem();
-		player.setItem(itemType);
+	public void interact(Survivor survivor) {
+		ItemType tempType = survivor.getItem();
+		survivor.setItem(itemType);
 		if (tempType != null) {
 			itemType = tempType;
 		} else {

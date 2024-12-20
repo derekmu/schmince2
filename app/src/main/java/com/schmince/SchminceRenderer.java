@@ -33,9 +33,9 @@ public class SchminceRenderer extends DRenderer {
 
 	private float cameraX = 50f;
 	private float cameraY = 50f;
-	private int playerIndex;
-	private int playerX;
-	private int playerY;
+	private int survivorIndex;
+	private int survivorX;
+	private int survivorY;
 
 	private SchminceGame game;
 	private GameModelInterface model;
@@ -76,6 +76,7 @@ public class SchminceRenderer extends DRenderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		DTimer.get().update();
+		game.tick();
 
 		// Redraw background color (the last call to GLES20.glClearColor sets the color that will be used (Eg. in onSurfaceCreated))
 		// also clear the depth buffer
@@ -134,12 +135,12 @@ public class SchminceRenderer extends DRenderer {
 		float px = cameraX;
 		float py = cameraY;
 
-		for (int i = 0; i < model.getPlayerCount(); i++) {
-			if (i == model.getSelectedPlayerIndex()) {
+		for (int i = 0; i < model.getSurvivorCount(); i++) {
+			if (i == model.getSelectedSurvivorIndex()) {
 				continue;
 			}
-			float dx = model.getPlayerX(i) - px;
-			float dy = model.getPlayerY(i) - py;
+			float dx = model.getSurvivorX(i) - px;
+			float dy = model.getSurvivorY(i) - py;
 			float h = (float) Math.sqrt(dx * dx + dy * dy);
 
 			float outer = 5f;
@@ -161,20 +162,20 @@ public class SchminceRenderer extends DRenderer {
 			GLTriangleUniform tri = getGlib().getTriangleUniform();
 			tri.setVertices(vertices);
 
-			DColor color = C.PLAYER_COLORS[i];
+			DColor color = C.SURVIVOR_COLORS[i];
 			tri.draw(getVPMatrix(), color.Red, color.Green, color.Blue, 0.25f);
 		}
 	}
 
 	private void updateCamera() {
-		playerIndex = model.getSelectedPlayerIndex();
-		playerX = model.getPlayerX(playerIndex);
-		playerY = model.getPlayerY(playerIndex);
-		float dx = playerX - cameraX;
-		float dy = playerY - cameraY;
+		survivorIndex = model.getSelectedSurvivorIndex();
+		survivorX = model.getSurvivorX(survivorIndex);
+		survivorY = model.getSurvivorY(survivorIndex);
+		float dx = survivorX - cameraX;
+		float dy = survivorY - cameraY;
 		if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-			cameraX = playerX;
-			cameraY = playerY;
+			cameraX = survivorX;
+			cameraY = survivorY;
 		} else {
 			cameraX += dx * DTimer.get().change() / 1000f;
 			cameraY += dy * DTimer.get().change() / 1000f;
@@ -215,11 +216,11 @@ public class SchminceRenderer extends DRenderer {
 			//GLRectangle rect = glib.getRectangle();
 			boolean cantSee = game.getGameState().useLOSDraw()
 					&& !model.isFlared()
-					&& !model.los().hasLOS(playerX, playerY, block.X, block.Y);
-			if (cantSee && !block.Seen[playerIndex]) {
+					&& !model.los().hasLOS(survivorX, survivorY, block.X, block.Y);
+			if (cantSee && !block.Seen[survivorIndex]) {
 				triangleSetBatch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f, BLACK);
 			} else {
-				block.Seen[playerIndex] = true;
+				block.Seen[survivorIndex] = true;
 				if (block.BlockType == SBlockType.ShipFloor) {
 					for (int i = 0; i < 6; i++) {
 						triangleSetBatch.batchRect(block.X - 0.5f + i * ONE_SIXTH, block.Y - 0.5f,
@@ -245,8 +246,8 @@ public class SchminceRenderer extends DRenderer {
 		public void forBlock(SBlock block) {
 			boolean cantSee = game.getGameState().useLOSDraw()
 					&& !model.isFlared()
-					&& !model.los().hasLOS(playerX, playerY, block.X, block.Y);
-			if (cantSee && !block.Seen[playerIndex]) {
+					&& !model.los().hasLOS(survivorX, survivorY, block.X, block.Y);
+			if (cantSee && !block.Seen[survivorIndex]) {
 				// draw nothing
 			} else {
 				SObject object = block.getObject();

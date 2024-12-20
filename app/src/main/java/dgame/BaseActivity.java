@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import dgui.BaseGUI;
 import dopengl.DGLSurfaceView;
 import dopengl.DRenderer;
+import thed.DTimer;
 
 /**
  * Base class for activities.
@@ -29,7 +30,7 @@ public abstract class BaseActivity extends Activity {
 		ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 		addContentView(viewGL, lp);
 
-		game.start();
+		DTimer.get().setPauseProvider(game);
 	}
 
 	protected abstract BaseGame<?> createGame();

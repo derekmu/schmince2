@@ -8,12 +8,12 @@ public class SBlock {
 	public final int Y;
 	public final boolean[] Seen;
 	public SBlockType BlockType = SBlockType.None;
-	private volatile SObject object;
+	private SObject object;
 
-	public SBlock(int x, int y, int playerCount) {
+	public SBlock(int x, int y, int survivors) {
 		this.X = x;
 		this.Y = y;
-		this.Seen = new boolean[playerCount];
+		this.Seen = new boolean[survivors];
 	}
 
 	public SObject getObject() {

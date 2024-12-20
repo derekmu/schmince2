@@ -15,7 +15,7 @@ public class ShipWall extends SObject {
 	}
 
 	@Override
-	public void interact(Player player) {
+	public void interact(Survivor survivor) {
 	}
 
 	@Override

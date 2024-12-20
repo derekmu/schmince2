@@ -5,12 +5,12 @@ import dgui.button.Button;
 /**
  * @author Derek Mulvihill - Jan 25, 2014
  */
-public class MapSizeButton extends Button {
+public class WorldSizeButton extends Button {
 	private int mapSize;
 	private GameCreateModule module;
 
-	public MapSizeButton(int mapSize, GameCreateModule module) {
-		super(Integer.toString(mapSize));
+	public WorldSizeButton(int mapSize, String name, GameCreateModule module) {
+		super(name);
 		this.mapSize = mapSize;
 		this.module = module;
 	}

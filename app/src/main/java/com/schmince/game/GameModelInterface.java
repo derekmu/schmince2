@@ -1,6 +1,6 @@
 package com.schmince.game;
 
-import com.schmince.game.howtoplay.HTPMessage;
+import com.schmince.game.howtoplay.HowToPlayMessage;
 import com.schmince.game.model.ItemType;
 import com.schmince.game.model.sprites.Sprite;
 
@@ -16,13 +16,13 @@ public interface GameModelInterface {
 
 	LOSFinder los();
 
-	int getPlayerCount();
+	int getSurvivorCount();
 
-	int getSelectedPlayerIndex();
+	int getSelectedSurvivorIndex();
 
-	int getPlayerX(int i);
+	int getSurvivorX(int i);
 
-	int getPlayerY(int i);
+	int getSurvivorY(int i);
 
 	boolean isLocating();
 
@@ -30,11 +30,11 @@ public interface GameModelInterface {
 
 	ItemType getItem();
 
-	boolean isPlayerAlert(int i);
+	boolean isSurivorAlert(int i);
 
-	int getPlayerHealth(int i);
+	int getSurvivorHealth(int i);
 
-	HTPMessage getHTPMessage();
+	HowToPlayMessage getHowToPlayMessage();
 
 	void getSprites(List<Sprite> sprites);
 

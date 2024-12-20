@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 class UserEventStore<T> {
 	private final AtomicBoolean stale = new AtomicBoolean(true);
-	private volatile T type;
+	private T type;
 
 	public boolean checkStale(T type) {
 		if (stale.compareAndSet(true, false)) {

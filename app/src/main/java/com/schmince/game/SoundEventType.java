@@ -12,7 +12,7 @@ public enum SoundEventType {
 	Error("error.wav"),
 	Hit("hit.wav"),
 	ArmorHit("hitArmor.wav"),
-	PlayerMoved("playerMoved.wav"),
+	SurvivorMoved("survivorMoved.wav"),
 	;
 
 	private final String fileName;

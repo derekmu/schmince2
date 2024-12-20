@@ -4,7 +4,7 @@ import com.schmince.C;
 import com.schmince.game.GameModelInterface;
 import com.schmince.game.GameState;
 import com.schmince.game.SchminceGame;
-import com.schmince.game.howtoplay.HTPMessage;
+import com.schmince.game.howtoplay.HowToPlayMessage;
 import com.schmince.game.model.ItemType;
 import com.schmince.gui.GUIModule;
 import dgui.GUIItem;
@@ -30,18 +30,18 @@ public class InGameGUIModule implements GUIModule {
 	private DFrameMonitor fpsMonitor = new DFrameMonitor(1000);
 
 	private List<GUIItem> inGameItems = new ArrayList<>();
-	private SelectPlayerButton[] playerButtons = new SelectPlayerButton[C.MAX_PLAYER_COUNT];
+	private SelectSurvivorButton[] survivorButtons = new SelectSurvivorButton[C.MAX_SURVIVOR_COUNT];
 	private UseItemButton useItemButton = new UseItemButton();
 	private NCSLabel labelFPS = new NCSLabel(new NumCharSequence("FPS: ", null));
 
-	private Panel panelHTPMessage = new Panel();
-	private Label[] htpMessageLabels = new Label[]{new Label(""), new Label(""), new Label(""), new Label(""), new Label(""), new Label(""), new Label(""), new Label("")};
-	private HTPNextButton htpNextButton = new HTPNextButton();
+	private Panel panelHowToPlayMessage = new Panel();
+	private Label[] howToPlayMessageLabels = new Label[]{new Label(""), new Label(""), new Label(""), new Label(""), new Label(""), new Label(""), new Label(""), new Label("")};
+	private HowToPlayNextButton howToPlayNextButton = new HowToPlayNextButton();
 
 	public InGameGUIModule() {
-		for (int i = 0; i < playerButtons.length; i++) {
-			SelectPlayerButton button = new SelectPlayerButton(i);
-			playerButtons[i] = button;
+		for (int i = 0; i < survivorButtons.length; i++) {
+			SelectSurvivorButton button = new SelectSurvivorButton(i);
+			survivorButtons[i] = button;
 			inGameItems.add(button);
 		}
 		inGameItems.add(useItemButton);
@@ -49,13 +49,13 @@ public class InGameGUIModule implements GUIModule {
 		labelFPS.Visible = false;
 		inGameItems.add(labelFPS);
 
-		panelHTPMessage.Color.set(0, 0, 0.5f, 0.5f);
-		inGameItems.add(panelHTPMessage);
+		panelHowToPlayMessage.Color.set(0, 0, 0.5f, 0.5f);
+		inGameItems.add(panelHowToPlayMessage);
 
-		htpNextButton.NormalColor.set(0, 0.75f, 0, 0.5f);
-		inGameItems.add(htpNextButton);
+		howToPlayNextButton.NormalColor.set(0, 0.75f, 0, 0.5f);
+		inGameItems.add(howToPlayNextButton);
 
-		Collections.addAll(inGameItems, htpMessageLabels);
+		Collections.addAll(inGameItems, howToPlayMessageLabels);
 
 		inGameItems = Collections.unmodifiableList(inGameItems);
 	}
@@ -66,16 +66,16 @@ public class InGameGUIModule implements GUIModule {
 		float x = 0;
 		float y = 0;
 		float h = Math.min(screenWidth, screenHeight) * 0.1f;
-		for (SelectPlayerButton button : playerButtons) {
-			if (model.getPlayerCount() <= button.getPlayerIndex()) {
+		for (SelectSurvivorButton button : survivorButtons) {
+			if (model.getSurvivorCount() <= button.getSurvivorIndex()) {
 				button.Visible = false;
 				continue;
 			}
 			button.Visible = true;
 			button.setIsAlert(DTimer.get().millis() % 500 < 250
-					&& model.isPlayerAlert(button.getPlayerIndex()));
-			button.setPlayerHealth(model.getPlayerHealth(button.getPlayerIndex()));
-			float w = h * 2;
+					&& model.isSurivorAlert(button.getSurvivorIndex()));
+			button.setSurvivorHealth(model.getSurvivorHealth(button.getSurvivorIndex()));
+			float w = h * 1.5f;
 			if (x + w > screenWidth) {
 				y += h + 5;
 				x = 0;
@@ -98,17 +98,17 @@ public class InGameGUIModule implements GUIModule {
 		labelFPS.Bounds.set(0, screenHeight - h, w, h);
 
 		if (game.getGameState() == GameState.HowToPlay) {
-			panelHTPMessage.Visible = true;
+			panelHowToPlayMessage.Visible = true;
 
-			HTPMessage message = model.getHTPMessage();
+			HowToPlayMessage message = model.getHowToPlayMessage();
 
 			y = screenHeight - 20;
 			x = 20;
 			float maxWidth = 0;
 
 			int m = 0;
-			for (; m < message.getMessages().length && m < htpMessageLabels.length; m++) {
-				Label label = htpMessageLabels[m];
+			for (; m < message.getMessages().length && m < howToPlayMessageLabels.length; m++) {
+				Label label = howToPlayMessageLabels[m];
 				label.Visible = true;
 				label.Text = message.getMessages()[m];
 				if (message.isTitle()) {
@@ -124,22 +124,22 @@ public class InGameGUIModule implements GUIModule {
 				y -= h;
 				label.Bounds.set(x, y, w, h);
 			}
-			for (; m < htpMessageLabels.length; m++) {
-				htpMessageLabels[m].Visible = false;
+			for (; m < howToPlayMessageLabels.length; m++) {
+				howToPlayMessageLabels[m].Visible = false;
 			}
 
-			w = htpNextButton.getGLText(textCache).getLength(htpNextButton.Text) * 1.5f;
-			h = htpNextButton.getGLText(textCache).getHeight() * 1.5f;
+			w = howToPlayNextButton.getGLText(textCache).getLength(howToPlayNextButton.Text) * 1.5f;
+			h = howToPlayNextButton.getGLText(textCache).getHeight() * 1.5f;
 			y -= h + 20;
-			htpNextButton.Bounds.set(x, y, w, h);
+			howToPlayNextButton.Bounds.set(x, y, w, h);
 
 			y -= 20;
-			panelHTPMessage.Bounds.set(0, y, maxWidth + 40, screenHeight - y);
+			panelHowToPlayMessage.Bounds.set(0, y, maxWidth + 40, screenHeight - y);
 		} else {
-			panelHTPMessage.Visible = false;
-			htpNextButton.Visible = false;
-			for (Label htpMessageLabel : htpMessageLabels) {
-				htpMessageLabel.Visible = false;
+			panelHowToPlayMessage.Visible = false;
+			howToPlayNextButton.Visible = false;
+			for (Label howToPlayMessageLabel : howToPlayMessageLabels) {
+				howToPlayMessageLabel.Visible = false;
 			}
 		}
 	}
@@ -151,10 +151,10 @@ public class InGameGUIModule implements GUIModule {
 
 	public void setGame(SchminceGame game) {
 		this.game = game;
-		for (SelectPlayerButton button : playerButtons) {
+		for (SelectSurvivorButton button : survivorButtons) {
 			button.setGame(game);
 		}
 		useItemButton.setGame(game);
-		htpNextButton.setGame(game);
+		howToPlayNextButton.setGame(game);
 	}
 }

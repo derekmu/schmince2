@@ -5,11 +5,11 @@ import dgui.button.Button;
 /**
  * @author Derek Mulvihill - Jan 25, 2014
  */
-public class CreateGameButton extends Button {
+public class StartGameButton extends Button {
 	private GameCreateModule module;
 
-	public CreateGameButton(GameCreateModule module) {
-		super("Create Game");
+	public StartGameButton(GameCreateModule module) {
+		super("Start Game");
 		this.module = module;
 	}
 

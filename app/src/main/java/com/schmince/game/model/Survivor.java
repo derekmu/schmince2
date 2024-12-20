@@ -6,7 +6,7 @@ import com.schmince.C;
 import com.schmince.SchminceRenderer;
 import com.schmince.game.GameModel;
 import com.schmince.gldraw.GLIconType;
-import com.schmince.gldraw.GLPlayer;
+import com.schmince.gldraw.GLSurvivor;
 import dopengl.shapes.GLLine;
 import thed.DColor;
 import thed.DRandom;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author Derek Mulvihill - Jan 18, 2014
  */
-public class Player extends SObject {
+public class Survivor extends SObject {
 	private static final int ACTION_MILLI = 1000;
 	private static final int FLARE_MILLI = 10000;
 	private static final int LOCATE_MILLI = 10000;
@@ -38,15 +38,15 @@ public class Player extends SObject {
 	private float previousX = -1, previousY = -1;
 	long moveMillis;
 
-	private volatile boolean isAlert;
+	private boolean isAlert;
 	private long lastFlareMilli = 0;
-	private volatile boolean isFlared;
+	private boolean isFlared;
 	private long lastLocateMilli = 0;
-	private volatile boolean isLocating;
+	private boolean isLocating;
 
-	private volatile int health = C.MAX_PLAYER_HEALTH;
+	private int health = C.MAX_SURVIVOR_HEALTH;
 
-	public Player(DColor color, int index) {
+	public Survivor(DColor color, int index) {
 		this.color = color;
 		this.Index = index;
 		this.glColor = new GLColor(color.Red, color.Green, color.Blue);
@@ -88,7 +88,7 @@ public class Player extends SObject {
 		if (block.getObject() == null) {
 			getCurrentBlock().setObject(null);
 			block.setObject(this);
-			gameModel.onPlayerMoved(this);
+			gameModel.onSurvivorMoved(this);
 			pathLocation++;
 			lastActionMilli = DTimer.get().millis();
 			if (item == ItemType.Boots) {
@@ -98,13 +98,12 @@ public class Player extends SObject {
 				&& block.X == targetX
 				&& block.Y == targetY) {
 			block.getObject().interact(this);
-			gameModel.onPlayerMoved(this);
+			gameModel.onSurvivorMoved(this);
 			lastActionMilli = DTimer.get().millis();
-			setTarget(-1, -1, gameModel);
 		} else if (block.getObject().isInteractable()
 				&& !Float.isInfinite(block.getObject().getPathCost(true, false))) {
 			block.getObject().interact(this);
-			gameModel.onPlayerMoved(this);
+			gameModel.onSurvivorMoved(this);
 			lastActionMilli = DTimer.get().millis();
 		} else {
 			setTarget(targetX, targetY, gameModel);
@@ -144,7 +143,7 @@ public class Player extends SObject {
 		if (health <= 0) {
 			Matrix.rotateM(vpMatrix, 0, Index % 2 == 0 ? 90 : -90, 0, 0, 1);
 		}
-		GLPlayer icon = (GLPlayer) renderer.getGlib().getDrawer(GLIconType.Player);
+		GLSurvivor icon = (GLSurvivor) renderer.getGlib().getDrawer(GLIconType.Survivor);
 		icon.draw(vpMatrix, health <= 0 ? drawSeed : DTimer.get().millis() + drawSeed, glColor);
 
 		vpMatrix = renderer.getVPMatrix();
@@ -168,7 +167,7 @@ public class Player extends SObject {
 	}
 
 	@Override
-	public void interact(Player player) {
+	public void interact(Survivor survivor) {
 		//nothing for now?
 	}
 
@@ -177,9 +176,6 @@ public class Player extends SObject {
 		return false;
 	}
 
-	/**
-	 * Health of a player, once it is 0 or less, the player is dead.
-	 */
 	public int getHealth() {
 		return health;
 	}

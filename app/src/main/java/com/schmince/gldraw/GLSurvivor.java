@@ -7,10 +7,10 @@ import thed.GLColor;
 /**
  * @author Derek Mulvihill - Jan 22, 2014
  */
-public class GLPlayer extends GLSimpleWobbleDrawer {
+public class GLSurvivor extends GLSimpleWobbleDrawer {
 	private static final GLColor defaultColor = new GLColor(0.233f, 0.218f, 0.531f);
 
-	public GLPlayer() {
+	public GLSurvivor() {
 		super(5, 1000, 0.05f);
 
 		buffer.tvcb(-0.905, 0.104, 1.000, -0.059, -0.045, 1.000, 0.500f, 0.500f, 0.500f)
