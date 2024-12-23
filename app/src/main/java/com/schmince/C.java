@@ -8,7 +8,6 @@ import thed.DColor;
  * @author Derek Mulvihill - Jan 9, 2014
  */
 public class C {
-	public static final float BASE_TILE_COLOR = 0.2f;
 	public static final int MAX_SURVIVOR_HEALTH = 10;
 	public static final int SHIP_SIZE = 3;
 	private static final DColor RED = new DColor(1, 0, 0);

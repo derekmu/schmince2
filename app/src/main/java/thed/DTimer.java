@@ -18,6 +18,7 @@ public class DTimer {
 	private PauseProvider pauser;
 	private long current;
 	private long last;
+
 	private DTimer() {
 		update();
 	}

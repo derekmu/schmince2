@@ -20,6 +20,7 @@ import java.util.List;
  * @author Derek Mulvihill - Jan 17, 2014
  */
 public class GameModel implements GameModelInterface {
+	final List<Flare> flares = new ArrayList<>();
 	private final int survivorCount;
 	private final int mapSize;
 	private final SBlock[][] blocks;
@@ -349,6 +350,7 @@ public class GameModel implements GameModelInterface {
 	}
 
 	public void onFlareUsed(Survivor survivor) {
+		flares.add(new Flare(survivor.getX(), survivor.getY()));
 		soundEvents.add(new SoundEvent(SoundEventType.Flare));
 	}
 
@@ -389,6 +391,16 @@ public class GameModel implements GameModelInterface {
 	}
 
 	@Override
+	public boolean isVisible(int fromX, int fromY, int toX, int toY) {
+		for (Flare flare : flares) {
+			if (flare.isFlared(toX, toY)) {
+				return true;
+			}
+		}
+		return los().hasLOS(fromX, fromY, toX, toY);
+	}
+
+	@Override
 	public void forBlock(int xs, int ys, int xe, int ye, ForSBlock forBlock) {
 		xs = Math.max(0, xs);
 		ys = Math.max(0, ys);
@@ -416,13 +428,13 @@ public class GameModel implements GameModelInterface {
 		return survivors[selectedSurvivorIndex];
 	}
 
-	public void setSelectedSurvivorIndex(int selectedSurvivorIndex) {
-		this.selectedSurvivorIndex = selectedSurvivorIndex;
-	}
-
 	@Override
 	public int getSelectedSurvivorIndex() {
 		return selectedSurvivorIndex;
+	}
+
+	public void setSelectedSurvivorIndex(int selectedSurvivorIndex) {
+		this.selectedSurvivorIndex = selectedSurvivorIndex;
 	}
 
 	@Override
@@ -440,10 +452,6 @@ public class GameModel implements GameModelInterface {
 		return getSelectedSurvivor().isLocating();
 	}
 
-	@Override
-	public boolean isFlared() {
-		return getSelectedSurvivor().isFlared();
-	}
 
 	@Override
 	public ItemType getItem() {

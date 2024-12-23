@@ -26,8 +26,6 @@ public interface GameModelInterface {
 
 	boolean isLocating();
 
-	boolean isFlared();
-
 	ItemType getItem();
 
 	boolean isSurivorAlert(int i);
@@ -39,4 +37,6 @@ public interface GameModelInterface {
 	void getSprites(List<Sprite> sprites);
 
 	void predrawObjects();
+
+	boolean isVisible(int fromX, int fromY, int x, int y);
 }

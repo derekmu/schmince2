@@ -18,16 +18,12 @@ import java.util.List;
 public class Enemy extends SObject {
 	private static final int MOVE_MILLI = 2000;
 	private final int drawSeed = DRandom.get().nextInt(10000);
-
+	long moveMillis;
 	private long lastMoveMilli = DTimer.get().millis() + DRandom.get().nextInt(MOVE_MILLI);
-
 	private boolean dead = false;
-
 	private List<Point> openPath = new ArrayList<>();
-
 	private int nextX = -1, nextY = -1;
 	private float previousX = -1, previousY = -1;
-	long moveMillis;
 
 	public void update(GameModel gameModel) {
 		if (this.dead || lastMoveMilli > DTimer.get().millis() - MOVE_MILLI) {
@@ -137,8 +133,8 @@ public class Enemy extends SObject {
 	}
 
 	@Override
-	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
-		if (cantSee) {
+	public void draw(SchminceRenderer renderer, SBlock block, boolean visible) {
+		if (!visible) {
 			return;
 		}
 		long dt = DTimer.get().millis() - moveMillis;

@@ -10,10 +10,10 @@ public class SBlock {
 	public SBlockType BlockType = SBlockType.None;
 	private SObject object;
 
-	public SBlock(int x, int y, int survivors) {
+	public SBlock(int x, int y, int survivorCount) {
 		this.X = x;
 		this.Y = y;
-		this.Seen = new boolean[survivors];
+		this.Seen = new boolean[survivorCount];
 	}
 
 	public SObject getObject() {
@@ -31,6 +31,6 @@ public class SBlock {
 		if ((seenIndex == -1 || Seen[seenIndex]) && object != null) {
 			return object.getPathCost(canDig, hasPick);
 		}
-		return 1f;
+		return 5f;
 	}
 }

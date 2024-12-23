@@ -7,19 +7,20 @@ import dopengl.shapes.GLRock;
  * @author Derek Mulvihill - Jan 18, 2014
  */
 public class Rock extends SObject {
-	private int health;
+	private static final float MAX_HEALTH = 8f;
 	private final double angleOffset;
+	private int health;
 
 	public Rock(float sample) {
-		this.health = Math.max(1, Math.round(sample * 10f));
+		this.health = Math.max(1, Math.round(sample * MAX_HEALTH));
 		this.angleOffset = thed.DRandom.get().nextDouble() * Math.PI * 2;
 	}
 
 	@Override
-	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
+	public void draw(SchminceRenderer renderer, SBlock block, boolean visible) {
 		GLRock rect = renderer.getGlib().getRock();
 		rect.setPolygon(block.X, block.Y, 0.5f, 3 + health, this.angleOffset);
-		rect.draw(renderer.getVPMatrix(), 0.1f + 0.4f * (health / 10f), 0.1f + 0.15f * (health / 10f), 0f, 1f);
+		rect.draw(renderer.getVPMatrix(), 0.1f + 0.4f * (health / MAX_HEALTH), 0.1f + 0.15f * (health / MAX_HEALTH), 0f, 1f);
 	}
 
 	@Override

@@ -8,12 +8,16 @@ import android.util.Log;
 import com.schmince.C;
 import com.schmince.game.howtoplay.HowToPlayStage;
 import com.schmince.game.model.Enemy;
+import com.schmince.game.model.Flare;
 import com.schmince.game.model.SBlockType;
 import com.schmince.game.model.Survivor;
 import dgame.BaseActivity;
 import dgame.BaseGame;
+import thed.DTimer;
 
+import java.util.Iterator;
 import java.util.List;
+
 
 /**
  * Schmince game controller.
@@ -21,6 +25,7 @@ import java.util.List;
  * @author Derek Mulvihill - Jan 9, 2014
  */
 public class SchminceGame extends BaseGame<UserEventType> {
+	private static final int FLARE_MILLI = 10000;
 	private final EventValues eventValues = new EventValues();
 	private final BasicOnCompletionListener ONCOMPLETELISTENER = new BasicOnCompletionListener();
 	private GameState gameState = GameState.StartScreen;
@@ -80,6 +85,13 @@ public class SchminceGame extends BaseGame<UserEventType> {
 	private void updateModel() {
 		int deadSurvivors = 0;
 		int safeSurvivors = 0;
+
+		for (Iterator<Flare> iter = model.flares.iterator(); iter.hasNext(); ) {
+			Flare flare = iter.next();
+			if (DTimer.get().millis() > flare.flareMilli + FLARE_MILLI) {
+				iter.remove();
+			}
+		}
 
 		for (int pi = 0; pi < model.getSurvivorCount(); pi++) {
 			Survivor survivor = model.getSurvivor(pi);

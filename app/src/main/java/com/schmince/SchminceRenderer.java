@@ -69,7 +69,7 @@ public class SchminceRenderer extends DRenderer {
 		GLES20.glDepthFunc(GLES20.GL_LEQUAL); //default is GL_LESS
 
 		//Draw background (sets background color for future calls to GLES20.glClear)
-		GLES20.glClearColor(0.15f, 0.15f, 0.15f, 1f);
+		GLES20.glClearColor(0f, 0f, 0f, 1f);
 		GLES20.glClearDepthf(1f);
 	}
 
@@ -203,65 +203,60 @@ public class SchminceRenderer extends DRenderer {
 	}
 
 	private class BlockDrawer implements ForSBlock {
-		private final GLColor BLACK = new GLColor(0f, 0f, 0f, 1f);
+		private final GLColor DARK_GREEN = new GLColor(0.05f, 0.2f, 0.05f, 1f);
 		private final GLColor SHIP_FLOOR_LIGHT = new GLColor(0.4f, 0.4f, 0.4f, 1f);
 		private final GLColor SHIP_FLOOR_DARK = new GLColor(0.35f, 0.35f, 0.35f, 1f);
-		private final GLColor BASE_TILE_COLOR = new GLColor(C.BASE_TILE_COLOR, C.BASE_TILE_COLOR,
-				C.BASE_TILE_COLOR, 1f);
-		private final float ONE_SIXTH = 1f / 6f;
-		private TriangleSetBatch triangleSetBatch = new TriangleSetBatch(SchminceRenderer.this);
+		private final GLColor GRAY = new GLColor(0.1f, 0.1f, 0.1f, 1f);
+		private final TriangleSetBatch batch = new TriangleSetBatch(SchminceRenderer.this);
 
 		@Override
 		public void forBlock(SBlock block) {
-			//GLRectangle rect = glib.getRectangle();
-			boolean cantSee = game.getGameState().useLOSDraw()
-					&& !model.isFlared()
-					&& !model.los().hasLOS(survivorX, survivorY, block.X, block.Y);
-			if (cantSee && !block.Seen[survivorIndex]) {
-				triangleSetBatch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f, BLACK);
-			} else {
-				block.Seen[survivorIndex] = true;
+			boolean useLos = game.getGameState().useLOSDraw();
+			boolean visible = model.isVisible(survivorX, survivorY, block.X, block.Y);
+			boolean seen = block.Seen[survivorIndex];
+			if (!useLos || visible || seen) {
 				if (block.BlockType == SBlockType.ShipFloor) {
 					for (int i = 0; i < 6; i++) {
-						triangleSetBatch.batchRect(block.X - 0.5f + i * ONE_SIXTH, block.Y - 0.5f,
-								ONE_SIXTH, 1f, i % 2 == 1 ? SHIP_FLOOR_LIGHT : SHIP_FLOOR_DARK);
+						batch.batchRect(block.X - 0.5f + i / 6f, block.Y - 0.5f,
+								1f / 6f, 1f, i % 2 == 1 ? SHIP_FLOOR_LIGHT : SHIP_FLOOR_DARK);
 					}
 				} else {
-					triangleSetBatch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f,
-							BASE_TILE_COLOR);
+					// normal ground is a dark green
+					batch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f, DARK_GREEN);
 				}
+			} else {
+				// unseen areas are gray
+				batch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f, GRAY);
 			}
 		}
 
 		public void after() {
-			triangleSetBatch.finishTriangleBatch();
+			batch.finishTriangleBatch();
 		}
 	}
 
 	private class ObjectDrawer implements ForSBlock {
 		private final GLColor FOG = new GLColor(0f, 0f, 0f, 0.5f);
-		private TriangleSetBatch triangleSetBatch = new TriangleSetBatch(SchminceRenderer.this);
+		private final TriangleSetBatch batch = new TriangleSetBatch(SchminceRenderer.this);
 
 		@Override
 		public void forBlock(SBlock block) {
-			boolean cantSee = game.getGameState().useLOSDraw()
-					&& !model.isFlared()
-					&& !model.los().hasLOS(survivorX, survivorY, block.X, block.Y);
-			if (cantSee && !block.Seen[survivorIndex]) {
-				// draw nothing
-			} else {
+			boolean useLos = game.getGameState().useLOSDraw();
+			boolean visible = model.isVisible(survivorX, survivorY, block.X, block.Y);
+			boolean seen = block.Seen[survivorIndex];
+			if (!useLos || visible || seen) {
 				SObject object = block.getObject();
 				if (object != null) {
-					object.draw(SchminceRenderer.this, block, cantSee);
+					object.draw(SchminceRenderer.this, block, !useLos || visible);
 				}
-				if (cantSee) {
-					triangleSetBatch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f, FOG);
+				if (useLos && !visible) {
+					batch.batchRect(block.X - 0.5f, block.Y - 0.5f, 1f, 1f, FOG);
 				}
 			}
 		}
 
 		public void after() {
-			triangleSetBatch.finishTriangleBatch();
+			batch.finishTriangleBatch();
 		}
 	}
 }

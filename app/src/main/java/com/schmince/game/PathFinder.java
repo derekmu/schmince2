@@ -40,7 +40,7 @@ public class PathFinder {
 		float closestScore = heuristic(start, target);
 		while (!openSet.isEmpty()) {
 			iteration++;
-			if (iteration > 200) {
+			if (iteration > 400) {
 				break;
 			}
 

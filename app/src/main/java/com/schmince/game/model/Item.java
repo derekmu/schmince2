@@ -14,8 +14,8 @@ public class Item extends SObject {
 	}
 
 	@Override
-	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
-		if (cantSee) {
+	public void draw(SchminceRenderer renderer, SBlock block, boolean visible) {
+		if (!visible) {
 			return;
 		}
 		float[] vpMatrix = renderer.getVPMatrix();

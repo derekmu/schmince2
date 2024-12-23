@@ -2,8 +2,6 @@ package dgui.textfield;
 
 import dgui.GUIItem;
 import dopengl.DInputHandler.DTextInputHolder;
-import texample.GLText;
-import texample.GLTextCache;
 import texample.GLTextType;
 import thed.DColor;
 

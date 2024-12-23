@@ -20,12 +20,12 @@ import java.util.List;
  */
 public class Survivor extends SObject {
 	private static final int ACTION_MILLI = 1000;
-	private static final int FLARE_MILLI = 10000;
 	private static final int LOCATE_MILLI = 10000;
+	public final int Index;
 	private final int drawSeed = DRandom.get().nextInt(10000);
 	private final DColor color;
-	public final int Index;
 	private final GLColor glColor;
+	long moveMillis;
 	private int targetX = -1;
 	private int targetY = -1;
 	private List<Point> path = null;
@@ -33,14 +33,9 @@ public class Survivor extends SObject {
 	private long lastActionMilli = 0;
 	private long timerMilli = 0;
 	private ItemType item = null;
-
 	private int nextX = -1, nextY = -1;
 	private float previousX = -1, previousY = -1;
-	long moveMillis;
-
 	private boolean isAlert;
-	private long lastFlareMilli = 0;
-	private boolean isFlared;
 	private long lastLocateMilli = 0;
 	private boolean isLocating;
 
@@ -53,7 +48,7 @@ public class Survivor extends SObject {
 	}
 
 	public void update(GameModel gameModel) {
-		updateFlared();
+		updateSeen(gameModel);
 		updateLocate();
 		updateAlert(gameModel);
 		if (health <= 0) {
@@ -110,6 +105,16 @@ public class Survivor extends SObject {
 		}
 	}
 
+	private void updateSeen(GameModel gameModel) {
+		int x = getX();
+		int y = getY();
+		gameModel.forBlock(x - 15, y - 15, x + 15, y + 15, block -> {
+			if (!block.Seen[Index] && gameModel.isVisible(x, y, block.X, block.Y)) {
+				block.Seen[Index] = true;
+			}
+		});
+	}
+
 	public void predraw() {
 		SBlock block = getCurrentBlock();
 		if (nextX == -1 && nextY == -1) {
@@ -129,8 +134,8 @@ public class Survivor extends SObject {
 	}
 
 	@Override
-	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
-		if (cantSee) {
+	public void draw(SchminceRenderer renderer, SBlock block, boolean visible) {
+		if (!visible) {
 			return;
 		}
 		long dt = DTimer.get().millis() - moveMillis;
@@ -219,13 +224,6 @@ public class Survivor extends SObject {
 		return isAlert;
 	}
 
-	private void updateFlared() {
-		isFlared = lastFlareMilli > DTimer.get().millis() - FLARE_MILLI && health > 0;
-	}
-
-	public boolean isFlared() {
-		return isFlared;
-	}
 
 	private void updateLocate() {
 		isLocating = lastLocateMilli > DTimer.get().millis() - LOCATE_MILLI && health > 0;
@@ -242,7 +240,6 @@ public class Survivor extends SObject {
 		switch (item) {
 			case Flare: {
 				item = null;
-				lastFlareMilli = DTimer.get().millis();
 				gameModel.onFlareUsed(this);
 				break;
 			}

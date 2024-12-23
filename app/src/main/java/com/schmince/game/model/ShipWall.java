@@ -8,7 +8,7 @@ import dopengl.shapes.GLRectangle;
  */
 public class ShipWall extends SObject {
 	@Override
-	public void draw(SchminceRenderer renderer, SBlock block, boolean cantSee) {
+	public void draw(SchminceRenderer renderer, SBlock block, boolean visible) {
 		GLRectangle rect = renderer.getGlib().getRectangle();
 		rect.setBounds(block.X - 0.5f, block.Y - 0.5f, 1f, 1f);
 		rect.draw(renderer.getVPMatrix(), 0.15f, 0.15f, 0.15f, 1f);
