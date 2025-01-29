@@ -72,8 +72,8 @@ public class InGameGUIModule implements GUIModule {
 				continue;
 			}
 			button.Visible = true;
-			button.setIsAlert(DTimer.get().millis() % 500 < 250
-					&& model.isSurivorAlert(button.getSurvivorIndex()));
+			button.setIsAlert(DTimer.get().millis() % 400 < 200
+					&& model.isSurvivorAlert(button.getSurvivorIndex()));
 			button.setSurvivorHealth(model.getSurvivorHealth(button.getSurvivorIndex()));
 			float w = h * 1.5f;
 			if (x + w > screenWidth) {

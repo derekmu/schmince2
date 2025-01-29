@@ -459,8 +459,17 @@ public class GameModel implements GameModelInterface {
 	}
 
 	@Override
-	public boolean isSurivorAlert(int i) {
+	public boolean isSurvivorAlert(int i) {
 		return survivors[i].isAlert();
+	}
+
+	@Override
+	public boolean isSurvivorSafe(int i) {
+		Survivor survivor = getSurvivor(i);
+		if (survivor.getHealth() <= 0) {
+			return false;
+		}
+		return survivor.getCurrentBlock().BlockType == SBlockType.ShipFloor;
 	}
 
 	@Override

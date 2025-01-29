@@ -12,7 +12,7 @@ public abstract class GUIItem {
 	 * Location in Orthographic coordinates where this GUIItem is located on the screen.
 	 */
 	public final Rectangle Bounds = new Rectangle();
-	public final GUIDrawer Drawer;
+	public GUIDrawer Drawer;
 	public final GUIMover Mover;
 	/**
 	 * Whether this GUIItem is visible at the current time.

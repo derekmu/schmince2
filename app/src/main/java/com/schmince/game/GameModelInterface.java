@@ -14,8 +14,6 @@ import java.util.List;
 public interface GameModelInterface {
 	void forBlock(int xs, int ys, int xe, int ye, ForSBlock forBlock);
 
-	LOSFinder los();
-
 	int getSurvivorCount();
 
 	int getSelectedSurvivorIndex();
@@ -24,19 +22,23 @@ public interface GameModelInterface {
 
 	int getSurvivorY(int i);
 
-	boolean isLocating();
+	int getSurvivorHealth(int i);
+
+	boolean isSurvivorAlert(int i);
+
+	boolean isSurvivorSafe(int i);
+
+	LOSFinder los();
 
 	ItemType getItem();
-
-	boolean isSurivorAlert(int i);
-
-	int getSurvivorHealth(int i);
 
 	HowToPlayMessage getHowToPlayMessage();
 
 	void getSprites(List<Sprite> sprites);
 
 	void predrawObjects();
+
+	boolean isLocating();
 
 	boolean isVisible(int fromX, int fromY, int x, int y);
 }

@@ -45,9 +45,9 @@ public class Rock extends SObject {
 		if (!canDig) {
 			return Float.POSITIVE_INFINITY;
 		} else if (hasPick) {
-			return 2;
+			return 1.5f;
 		} else {
-			return 1 + health;
+			return 1 + (float)(health) / 2;
 		}
 	}
 

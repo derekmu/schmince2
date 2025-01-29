@@ -152,11 +152,7 @@ public class PathFinder {
 			return 0f;
 		}
 		SBlock block = blocks[to.x][to.y];
-		if (block.getObject() != null) {
-			return block.getPathCost(canDig, hasPick, seenIndex);
-		} else {
-			return 1f;
-		}
+		return block.getPathCost(canDig, hasPick, seenIndex);
 	}
 
 	/**

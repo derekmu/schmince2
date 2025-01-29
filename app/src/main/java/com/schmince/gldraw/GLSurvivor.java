@@ -38,6 +38,5 @@ public class GLSurvivor extends GLSimpleWobbleDrawer {
 		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, buffer.getVertexCount());
 
 		program.end();
-
 	}
 }

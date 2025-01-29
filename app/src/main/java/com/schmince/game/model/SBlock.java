@@ -31,6 +31,6 @@ public class SBlock {
 		if ((seenIndex == -1 || Seen[seenIndex]) && object != null) {
 			return object.getPathCost(canDig, hasPick);
 		}
-		return 5f;
+		return 1f;
 	}
 }
