@@ -6,4 +6,5 @@ package thed;
 public enum Alignment {
 	Center,
 	CenterLeft,
+	BottomCenter,
 }

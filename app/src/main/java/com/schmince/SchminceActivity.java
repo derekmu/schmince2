@@ -24,7 +24,6 @@ public class SchminceActivity extends BaseActivity {
 
 		gui = new SchminceGUI();
 		gui.setGame(game);
-		gui.setActivity(this);
 
 		renderer = new SchminceRenderer(this, game, gui);
 		super.onCreate(savedInstanceState);

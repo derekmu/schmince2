@@ -1,6 +1,5 @@
 package com.schmince.gui;
 
-import android.app.Activity;
 import com.schmince.game.SchminceGame;
 import com.schmince.gui.gamecreate.GameCreateModule;
 import com.schmince.gui.gameover.GameOverModule;
@@ -16,103 +15,99 @@ import java.util.List;
  * @author Derek Mulvihill - Jan 9, 2014
  */
 public class SchminceGUI extends BaseGUI {
-	private SchminceGame game;
-	private GUIState state = GUIState.None;
+    private SchminceGame game;
+    private final GUIState state = GUIState.None;
 
-	private StartScreenGUIModule startScreenModule = new StartScreenGUIModule();
-	private InGameGUIModule inGameModule = new InGameGUIModule();
-	private GameCreateModule gameCreateModule = new GameCreateModule();
-	private GameOverModule gameOverModule = new GameOverModule();
+    private final StartScreenGUIModule startScreenModule = new StartScreenGUIModule();
+    private final InGameGUIModule inGameModule = new InGameGUIModule();
+    private final GameCreateModule gameCreateModule = new GameCreateModule();
+    private final GameOverModule gameOverModule = new GameOverModule();
 
-	public void setGame(SchminceGame game) {
-		this.game = game;
-		startScreenModule.setGame(game);
-		inGameModule.setGame(game);
-		gameCreateModule.setGame(game);
-		gameOverModule.setGame(game);
-	}
+    public void setGame(SchminceGame game) {
+        this.game = game;
+        startScreenModule.setGame(game);
+        inGameModule.setGame(game);
+        gameCreateModule.setGame(game);
+        gameOverModule.setGame(game);
+    }
 
-	public void setActivity(Activity activity) {
-		startScreenModule.setActivity(activity);
-	}
+    @Override
+    public List<GUIItem> getGUIItems() {
+        GUIModule module = getModule();
+        if (module != null) {
+            return module.getGUI();
+        }
+        return null;
+    }
 
-	@Override
-	public List<GUIItem> getGUIItems() {
-		GUIModule module = getModule();
-		if (module != null) {
-			return module.getGUI();
-		}
-		return null;
-	}
+    private GUIModule getModule() {
+        switch (game.getGameState()) {
+            case StartScreen: {
+                return startScreenModule;
+            }
+            case HowToPlay:
+            case InGame: {
+                if (state == GUIState.None) {
+                    return inGameModule;
+                }
+                throw new RuntimeException("Invalid GUIState");
+            }
+            case GameCreate: {
+                return gameCreateModule;
+            }
+            case GameStarting: {
+                return null;
+            }
+            case GameOver: {
+                return gameOverModule;
+            }
+            default: {
+                throw new RuntimeException("Invalid GameState");
+            }
+        }
+    }
 
-	private GUIModule getModule() {
-		switch (game.getGameState()) {
-			case StartScreen: {
-				return startScreenModule;
-			}
-			case HowToPlay:
-			case InGame: {
-				if (state == GUIState.None) {
-					return inGameModule;
-				}
-				throw new RuntimeException("Invalid GUIState");
-			}
-			case GameCreate: {
-				return gameCreateModule;
-			}
-			case GameStarting: {
-				return null; //TODO: loading screen
-			}
-			case GameOver: {
-				return gameOverModule;
-			}
-			default: {
-				throw new RuntimeException("Invalid GameState");
-			}
-		}
-	}
+    @Override
+    public void update(int screenWidth, int screenHeight, GLTextCache textCache) {
+        GUIModule module = getModule();
+        if (module != null) {
+            module.update(screenWidth, screenHeight, textCache);
+        }
+    }
 
-	@Override
-	public void update(int screenWidth, int screenHeight, GLTextCache textCache) {
-		GUIModule module = getModule();
-		if (module != null) {
-			module.update(screenWidth, screenHeight, textCache);
-		}
-	}
+    @Override
+    protected void uniqueAction(float worldX, float worldY) {
 
-	@Override
-	protected void uniqueAction(float worldX, float worldY) {
+    }
 
-	}
+    @Override
+    protected void endUniqueAction(float worldX, float worldY) {
 
-	@Override
-	protected void endUniqueAction(float worldX, float worldY) {
+    }
 
-	}
+    @Override
+    protected boolean singleAction(float worldX, float worldY) {
+        game.onTap(worldX, worldY);
+        return true;
+    }
 
-	@Override
-	protected boolean singleAction(float worldX, float worldY) {
-		game.onTap(worldX, worldY);
-		return true;
-	}
-
-	@Override
-	public boolean onBackPressed() {
-		switch (game.getGameState()) {
-			case GameCreate:
-				game.onCancelGameCreate();
-				return true;
-			case GameOver:
-				game.onEndGameOver();
-				return true;
-			case HowToPlay:
-				game.onCancelHowToPlay();
-				return true;
-			case GameStarting:
-			case InGame:
-			case StartScreen:
-				break;
-		}
-		return false;
-	}
+    @Override
+    public boolean onBackPressed() {
+        switch (game.getGameState()) {
+            case GameCreate:
+                game.onCancelGameCreate();
+                return true;
+            case GameOver:
+                game.onEndGameOver();
+                return true;
+            case HowToPlay:
+                game.onCancelHowToPlay();
+                return true;
+            case GameStarting:
+            case InGame:
+            case StartScreen:
+                break;
+        }
+        return false;
+    }
 }

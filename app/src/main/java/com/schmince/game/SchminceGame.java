@@ -38,7 +38,7 @@ public class SchminceGame extends BaseGame<UserEventType> {
 	private int gameStartEnemies;
 	private int deadCount;
 	private int survivorCount;
-	private Context context;
+	public Context context;
 
 	public SchminceGame(BaseActivity activity) {
 		this.context = activity;
