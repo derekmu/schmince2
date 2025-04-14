@@ -11,8 +11,8 @@ android {
         applicationId = "com.schmince"
         minSdk = 21
         targetSdk = 34
-        versionCode = 9
-        versionName = "9.0.0"
+        versionCode = 11
+        versionName = "11.0.0"
         vectorDrawables {
             useSupportLibrary = true
         }
