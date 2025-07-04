@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "com.schmince"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.schmince"
         minSdk = 21
-        targetSdk = 34
-        versionCode = 11
-        versionName = "11.0.0"
+        targetSdk = 36
+        versionCode = 12
+        versionName = "12.0.0"
         vectorDrawables {
             useSupportLibrary = true
         }
