@@ -7,5 +7,5 @@ package thed;
  * @author Derek Mulvihill
  */
 public interface PauseProvider {
-	long getPauseOffset();
+    long getPauseOffset();
 }

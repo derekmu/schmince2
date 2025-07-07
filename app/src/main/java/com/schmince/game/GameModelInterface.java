@@ -12,33 +12,33 @@ import java.util.List;
  * @author Derek Mulvihill - Jan 17, 2014
  */
 public interface GameModelInterface {
-	void forBlock(int xs, int ys, int xe, int ye, ForSBlock forBlock);
+    void forBlock(int xs, int ys, int xe, int ye, ForSBlock forBlock);
 
-	int getSurvivorCount();
+    int getSurvivorCount();
 
-	int getSelectedSurvivorIndex();
+    int getSelectedSurvivorIndex();
 
-	int getSurvivorX(int i);
+    int getSurvivorX(int i);
 
-	int getSurvivorY(int i);
+    int getSurvivorY(int i);
 
-	int getSurvivorHealth(int i);
+    int getSurvivorHealth(int i);
 
-	boolean isSurvivorAlert(int i);
+    boolean isSurvivorAlert(int i);
 
-	boolean isSurvivorSafe(int i);
+    boolean isSurvivorSafe(int i);
 
-	LOSFinder los();
+    LOSFinder los();
 
-	ItemType getItem();
+    ItemType getItem();
 
-	HowToPlayMessage getHowToPlayMessage();
+    HowToPlayMessage getHowToPlayMessage();
 
-	void getSprites(List<Sprite> sprites);
+    void getSprites(List<Sprite> sprites);
 
-	void predrawObjects();
+    void predrawObjects();
 
-	boolean isLocating();
+    boolean isLocating();
 
-	boolean isVisible(int fromX, int fromY, int x, int y);
+    boolean isVisible(int fromX, int fromY, int x, int y);
 }

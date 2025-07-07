@@ -6,13 +6,13 @@ package texample;
  * @author Derek Mulvihill
  */
 public enum GLTextType {
-	Sans("FreeSans.otf"),
-	SansBold("FreeSansBold.otf"),
-	;
+    Sans("FreeSans.otf"),
+    SansBold("FreeSansBold.otf"),
+    ;
 
-	public final String FileName;
+    public final String FileName;
 
-	GLTextType(String fileName) {
-		this.FileName = fileName;
-	}
+    GLTextType(String fileName) {
+        this.FileName = fileName;
+    }
 }

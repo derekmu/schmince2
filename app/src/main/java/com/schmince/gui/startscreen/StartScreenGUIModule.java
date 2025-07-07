@@ -1,5 +1,6 @@
 package com.schmince.gui.startscreen;
 
+import androidx.core.graphics.Insets;
 import com.schmince.game.SchminceGame;
 import com.schmince.gldraw.GLIconType;
 import com.schmince.gui.GUIModule;
@@ -18,12 +19,12 @@ import java.util.List;
  * @author Derek Mulvihill - Jan 15, 2014
  */
 public class StartScreenGUIModule implements GUIModule {
-    private List<GUIItem> startScreenItems = new ArrayList<>();
     private final Panel panelDark = new Panel();
     private final Icon titleIcon = new Icon(GLIconType.Title);
     private final NewGameButton newGameButton = new NewGameButton();
     private final HowToPlayButton howToPlayButton = new HowToPlayButton();
     private final PrivacyButton privacyButton = new PrivacyButton();
+    private List<GUIItem> startScreenItems = new ArrayList<>();
 
     public StartScreenGUIModule() {
         panelDark.Color.set(0f, 0f, 0f, 0.35f);
@@ -48,13 +49,19 @@ public class StartScreenGUIModule implements GUIModule {
     }
 
     @Override
-    public void update(int width, int height, GLTextCache textCache) {
+    public void update(int width, int height, Insets insets, GLTextCache textCache) {
         panelDark.Bounds.set(0, 0, width, height);
+
+        int left = insets.left;
+        int bottom = insets.bottom;
+        width -= insets.left + insets.right;
+        height -= insets.top + insets.bottom;
+
         int pad = Math.min(width / 20, height / 20);
-        titleIcon.Bounds.set(pad, height / 2f, width - pad * 2, height / 2f);
+        titleIcon.Bounds.set(left + pad, bottom + height / 2f, width - pad * 2, height / 2f);
         if (width > height) {
-            int x = pad;
-            int y = pad;
+            int x = left + pad;
+            int y = bottom + pad;
             int w = width / 2 - pad * 2;
             int h = height / 2 - pad * 2;
             newGameButton.Bounds.set(x, y, w, h);
@@ -64,8 +71,8 @@ public class StartScreenGUIModule implements GUIModule {
             y += h + pad * 2;
             howToPlayButton.Bounds.set(x, y, w, h);
         } else {
-            int x = pad;
-            int y = pad;
+            int x = left + pad;
+            int y = bottom + pad;
             int w = width - pad * 2;
             int h = height / 2 / 3 - pad * 2;
             privacyButton.Bounds.set(x, y, w, h);

@@ -8,10 +8,10 @@ import thed.NumCharSequence;
  * @author Derek Mulvihill - Oct 30, 2013
  */
 public class NCSLabel extends Label {
-	public final NumCharSequence NCS;
+    public final NumCharSequence NCS;
 
-	public NCSLabel(NumCharSequence ncs) {
-		super(ncs);
-		this.NCS = ncs;
-	}
+    public NCSLabel(NumCharSequence ncs) {
+        super(ncs);
+        this.NCS = ncs;
+    }
 }

@@ -8,29 +8,29 @@ import thed.Rectangle;
  * @author Derek Mulvihill
  */
 public abstract class GUIItem {
-	/**
-	 * Location in Orthographic coordinates where this GUIItem is located on the screen.
-	 */
-	public final Rectangle Bounds = new Rectangle();
-	public GUIDrawer Drawer;
-	public final GUIMover Mover;
-	/**
-	 * Whether this GUIItem is visible at the current time.
-	 */
-	public boolean Visible = true;
-	/**
-	 * Whether this GUIItem is the receiver of the current touch gesture.
-	 * This should only be modified by GUI.
-	 */
-	public boolean HasFocus = false;
+    /**
+     * Location in Orthographic coordinates where this GUIItem is located on the screen.
+     */
+    public final Rectangle Bounds = new Rectangle();
+    public final GUIMover Mover;
+    public GUIDrawer Drawer;
+    /**
+     * Whether this GUIItem is visible at the current time.
+     */
+    public boolean Visible = true;
+    /**
+     * Whether this GUIItem is the receiver of the current touch gesture.
+     * This should only be modified by GUI.
+     */
+    public boolean HasFocus = false;
 
-	public GUIItem(GUIDrawer drawer) {
-		this.Drawer = drawer;
-		this.Mover = null;
-	}
+    public GUIItem(GUIDrawer drawer) {
+        this.Drawer = drawer;
+        this.Mover = null;
+    }
 
-	public GUIItem(GUIDrawer drawer, GUIMover mover) {
-		this.Drawer = drawer;
-		this.Mover = mover;
-	}
+    public GUIItem(GUIDrawer drawer, GUIMover mover) {
+        this.Drawer = drawer;
+        this.Mover = mover;
+    }
 }

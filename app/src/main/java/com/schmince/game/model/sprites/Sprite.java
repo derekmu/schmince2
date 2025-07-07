@@ -6,7 +6,7 @@ import dopengl.DRenderer;
  * @author Derek Mulvihill - Mar 16, 2014
  */
 public interface Sprite {
-	void drawSprite(DRenderer render);
+    void drawSprite(DRenderer render);
 
-	boolean isExpired();
+    boolean isExpired();
 }

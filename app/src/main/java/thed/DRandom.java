@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Derek Mulvihill - Sep 2, 2013
  */
 public class DRandom {
-	public static Random get() {
-		return ThreadLocalRandom.current();
-	}
+    public static Random get() {
+        return ThreadLocalRandom.current();
+    }
 }

@@ -7,20 +7,20 @@ import dopengl.drawable.GLDrawableProvider;
  * @author Derek Mulvihill - Jan 18, 2014
  */
 public enum GLIconType implements GLDrawableProvider {
-	Enemy(GLEnemy.class),
-	Survivor(GLSurvivor.class),
-	Title(GLTitle.class),
-	//
-	;
+    Enemy(GLEnemy.class),
+    Survivor(GLSurvivor.class),
+    Title(GLTitle.class),
+    //
+    ;
 
-	private final Class<? extends GLDrawable> clazz;
+    private final Class<? extends GLDrawable> clazz;
 
-	GLIconType(Class<? extends GLDrawable> clazz) {
-		this.clazz = clazz;
-	}
+    GLIconType(Class<? extends GLDrawable> clazz) {
+        this.clazz = clazz;
+    }
 
-	@Override
-	public Class<? extends GLDrawable> getDrawClass() {
-		return clazz;
-	}
+    @Override
+    public Class<? extends GLDrawable> getDrawClass() {
+        return clazz;
+    }
 }

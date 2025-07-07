@@ -14,54 +14,55 @@ import thed.DTimer;
  * @author Derek Mulvihill - Jan 11, 2014
  */
 public abstract class BaseActivity extends Activity {
-	private BaseGame<?> game;
-	private BaseGUI gui;
+    protected DGLSurfaceView viewGL;
+    private BaseGame<?> game;
+    private BaseGUI gui;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		game = createGame();
-		gui = createGUI();
+        game = createGame();
+        gui = createGUI();
 
-		DGLSurfaceView viewGL = new DGLSurfaceView(this, null);
-		viewGL.setDRenderer(createRenderer());
-		viewGL.setDInputHandler(gui);
-		ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-		addContentView(viewGL, lp);
+        viewGL = new DGLSurfaceView(this, null);
+        viewGL.setDRenderer(createRenderer());
+        viewGL.setDInputHandler(gui);
+        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        addContentView(viewGL, lp);
 
-		DTimer.get().setPauseProvider(game);
-	}
+        DTimer.get().setPauseProvider(game);
+    }
 
-	protected abstract BaseGame<?> createGame();
+    protected abstract BaseGame<?> createGame();
 
-	protected abstract BaseGUI createGUI();
+    protected abstract BaseGUI createGUI();
 
-	protected abstract DRenderer createRenderer();
+    protected abstract DRenderer createRenderer();
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		game.onPause();
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        game.onPause();
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		game.onResume();
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        game.onResume();
+    }
 
-	@Override
-	protected void onDestroy() {
-		game.onDestroy();
-		super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        game.onDestroy();
+        super.onDestroy();
+    }
 
-	// ignore deprecation because callbacks don't seem to allow canceling the back button press
-	@Override
-	public void onBackPressed() {
-		if (!gui.onBackPressed()) {
-			super.onBackPressed();
-		}
-	}
+    // ignore deprecation because callbacks don't seem to allow canceling the back button press
+    @Override
+    public void onBackPressed() {
+        if (!gui.onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
 }

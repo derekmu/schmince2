@@ -17,86 +17,86 @@ import java.util.Map;
  * @author Derek Mulvihill - Aug 14, 2013
  */
 public class GLLibrary implements GLTextCache {
-	private Map<GLTextType, GLText> fontText = new HashMap<>();
-	private Map<GLDrawableProvider, GLDrawable> drawables = new HashMap<>();
+    private Map<GLTextType, GLText> fontText = new HashMap<>();
+    private Map<GLDrawableProvider, GLDrawable> drawables = new HashMap<>();
 
-	private GLLine line = null;
-	private GLTriangle triangle = null;
-	private GLTriangleUniform triangleUniform = null;
-	private GLRectangle rectangle = null;
-	private GLRock rock = null;
-	private GLTriangleSet triangleSet = null;
+    private GLLine line = null;
+    private GLTriangle triangle = null;
+    private GLTriangleUniform triangleUniform = null;
+    private GLRectangle rectangle = null;
+    private GLRock rock = null;
+    private GLTriangleSet triangleSet = null;
 
-	private Context context;
+    private Context context;
 
-	public GLLibrary(Context context) {
-		this.context = context;
-	}
+    public GLLibrary(Context context) {
+        this.context = context;
+    }
 
-	public GLLine getLine() {
-		if (line == null) {
-			line = new GLLine();
-		}
-		return line;
-	}
+    public GLLine getLine() {
+        if (line == null) {
+            line = new GLLine();
+        }
+        return line;
+    }
 
-	public GLTriangle getTriangle() {
-		if (triangle == null) {
-			triangle = new GLTriangle();
-		}
-		return triangle;
-	}
+    public GLTriangle getTriangle() {
+        if (triangle == null) {
+            triangle = new GLTriangle();
+        }
+        return triangle;
+    }
 
-	public GLTriangleUniform getTriangleUniform() {
-		if (triangleUniform == null) {
-			triangleUniform = new GLTriangleUniform();
-		}
-		return triangleUniform;
-	}
+    public GLTriangleUniform getTriangleUniform() {
+        if (triangleUniform == null) {
+            triangleUniform = new GLTriangleUniform();
+        }
+        return triangleUniform;
+    }
 
-	public GLRectangle getRectangle() {
-		if (rectangle == null) {
-			rectangle = new GLRectangle();
-		}
-		return rectangle;
-	}
+    public GLRectangle getRectangle() {
+        if (rectangle == null) {
+            rectangle = new GLRectangle();
+        }
+        return rectangle;
+    }
 
-	public GLRock getRock() {
-		if (rock == null) {
-			rock = new GLRock();
-		}
-		return rock;
-	}
+    public GLRock getRock() {
+        if (rock == null) {
+            rock = new GLRock();
+        }
+        return rock;
+    }
 
-	public GLTriangleSet getTriangleSet() {
-		if (triangleSet == null) {
-			triangleSet = new GLTriangleSet();
-		}
-		return triangleSet;
-	}
+    public GLTriangleSet getTriangleSet() {
+        if (triangleSet == null) {
+            triangleSet = new GLTriangleSet();
+        }
+        return triangleSet;
+    }
 
-	public GLDrawable getDrawer(GLDrawableProvider provider) {
-		if (!drawables.containsKey(provider)) {
-			try {
-				drawables.put(provider, provider.getDrawClass().getDeclaredConstructor().newInstance());
-			} catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-		return drawables.get(provider);
-	}
+    public GLDrawable getDrawer(GLDrawableProvider provider) {
+        if (!drawables.containsKey(provider)) {
+            try {
+                drawables.put(provider, provider.getDrawClass().getDeclaredConstructor().newInstance());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return drawables.get(provider);
+    }
 
-	public GLText getText(GLTextType type, float scale) {
-		if (fontText.containsKey(type)) {
-			GLText text = fontText.get(type);
-			assert text != null;
-			text.setScale(scale, scale);
-			return text;
-		}
-		GLText glText = new GLText(context.getAssets());
-		glText.load(type.FileName, 50, 10, 10);
-		glText.setScale(scale, scale);
-		fontText.put(type, glText);
-		return glText;
-	}
+    public GLText getText(GLTextType type, float scale) {
+        if (fontText.containsKey(type)) {
+            GLText text = fontText.get(type);
+            assert text != null;
+            text.setScale(scale, scale);
+            return text;
+        }
+        GLText glText = new GLText(context.getAssets());
+        glText.load(type.FileName, 50, 10, 10);
+        glText.setScale(scale, scale);
+        fontText.put(type, glText);
+        return glText;
+    }
 }

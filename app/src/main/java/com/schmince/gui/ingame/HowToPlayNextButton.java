@@ -9,18 +9,18 @@ import dgui.button.Button;
  * @author Derek Mulvihill - Mar 15, 2014
  */
 public class HowToPlayNextButton extends Button {
-	private SchminceGame game;
+    private SchminceGame game;
 
-	public HowToPlayNextButton() {
-		super("Next");
-	}
+    public HowToPlayNextButton() {
+        super("Next");
+    }
 
-	@Override
-	public void doAction() {
-		game.onNextHowToPlay();
-	}
+    @Override
+    public void doAction() {
+        game.onNextHowToPlay();
+    }
 
-	public void setGame(SchminceGame game) {
-		this.game = game;
-	}
+    public void setGame(SchminceGame game) {
+        this.game = game;
+    }
 }

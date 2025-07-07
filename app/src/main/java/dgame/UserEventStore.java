@@ -8,26 +8,26 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Derek Mulvihill - Jan 11, 2014
  */
 class UserEventStore<T> {
-	private final AtomicBoolean stale = new AtomicBoolean(true);
-	private T type;
+    private final AtomicBoolean stale = new AtomicBoolean(true);
+    private T type;
 
-	public boolean checkStale(T type) {
-		if (stale.compareAndSet(true, false)) {
-			this.type = type;
-			return true;
-		}
-		return false;
-	}
+    public boolean checkStale(T type) {
+        if (stale.compareAndSet(true, false)) {
+            this.type = type;
+            return true;
+        }
+        return false;
+    }
 
-	public boolean isStale() {
-		return stale.get();
-	}
+    public boolean isStale() {
+        return stale.get();
+    }
 
-	public void markStale() {
-		stale.set(true);
-	}
+    public void markStale() {
+        stale.set(true);
+    }
 
-	public T getType() {
-		return type;
-	}
+    public T getType() {
+        return type;
+    }
 }

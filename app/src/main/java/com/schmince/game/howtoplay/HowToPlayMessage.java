@@ -6,19 +6,19 @@ package com.schmince.game.howtoplay;
  * @author Derek Mulvihill - Mar 15, 2014
  */
 public class HowToPlayMessage {
-	private boolean isTitle;
-	private String[] messages;
+    private boolean isTitle;
+    private String[] messages;
 
-	public HowToPlayMessage(boolean title, String... messages) {
-		this.isTitle = title;
-		this.messages = messages;
-	}
+    public HowToPlayMessage(boolean title, String... messages) {
+        this.isTitle = title;
+        this.messages = messages;
+    }
 
-	public boolean isTitle() {
-		return isTitle;
-	}
+    public boolean isTitle() {
+        return isTitle;
+    }
 
-	public String[] getMessages() {
-		return messages;
-	}
+    public String[] getMessages() {
+        return messages;
+    }
 }

@@ -6,15 +6,16 @@ import dgui.button.Button;
  * @author Derek Mulvihill - Jan 25, 2014
  */
 public class StartGameButton extends Button {
-	private GameCreateModule module;
+    private GameCreateModule module;
 
-	public StartGameButton(GameCreateModule module) {
-		super("Start Game");
-		this.module = module;
-	}
+    public StartGameButton(GameCreateModule module) {
+        super("Start Game");
+        this.TextScale = 1.5f;
+        this.module = module;
+    }
 
-	@Override
-	public void doAction() {
-		module.createGame();
-	}
+    @Override
+    public void doAction() {
+        module.createGame();
+    }
 }

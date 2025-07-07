@@ -1,5 +1,6 @@
 package com.schmince.gui;
 
+import androidx.core.graphics.Insets;
 import com.schmince.game.SchminceGame;
 import com.schmince.gui.gamecreate.GameCreateModule;
 import com.schmince.gui.gameover.GameOverModule;
@@ -15,13 +16,13 @@ import java.util.List;
  * @author Derek Mulvihill - Jan 9, 2014
  */
 public class SchminceGUI extends BaseGUI {
-    private SchminceGame game;
     private final GUIState state = GUIState.None;
-
     private final StartScreenGUIModule startScreenModule = new StartScreenGUIModule();
     private final InGameGUIModule inGameModule = new InGameGUIModule();
     private final GameCreateModule gameCreateModule = new GameCreateModule();
     private final GameOverModule gameOverModule = new GameOverModule();
+    Insets insets;
+    private SchminceGame game;
 
     public void setGame(SchminceGame game) {
         this.game = game;
@@ -71,7 +72,7 @@ public class SchminceGUI extends BaseGUI {
     public void update(int screenWidth, int screenHeight, GLTextCache textCache) {
         GUIModule module = getModule();
         if (module != null) {
-            module.update(screenWidth, screenHeight, textCache);
+            module.update(screenWidth, screenHeight, insets, textCache);
         }
     }
 
@@ -109,5 +110,9 @@ public class SchminceGUI extends BaseGUI {
                 break;
         }
         return false;
+    }
+
+    public void updateInsets(Insets insets) {
+        this.insets = insets;
     }
 }
