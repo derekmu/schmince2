@@ -15,6 +15,7 @@ import dgame.BaseActivity;
 import dgame.BaseGame;
 import thed.DTimer;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,6 +41,10 @@ public class SchminceGame extends BaseGame<UserEventType> {
     private boolean gameHardcore;
     private int deadCount;
     private int survivorCount;
+    private int slugsKilled;
+    private int damageTaken;
+    private Date startTime = new Date();
+    private Date endTime = new Date();
 
     public SchminceGame(BaseActivity activity) {
         this.context = activity;
@@ -57,6 +62,18 @@ public class SchminceGame extends BaseGame<UserEventType> {
         return survivorCount;
     }
 
+    public long getTimeSeconds() {
+        return (endTime.getTime() - startTime.getTime()) / 1000L;
+    }
+
+    public int getSlugsKilled() {
+        return slugsKilled;
+    }
+
+    public int getDamageTaken() {
+        return damageTaken;
+    }
+
     @Override
     public void gameStep() {
         switch (getGameState()) {
@@ -68,6 +85,7 @@ public class SchminceGame extends BaseGame<UserEventType> {
             case GameStarting: {
                 model = new GameModel(gameStartSurvivorCount, gameStartMapSize, gameStartEnemies, gameStartItems, gameHardcore);
                 gameState = GameState.InGame;
+                startTime = new Date();
                 break;
             }
             case GameCreate:
@@ -107,6 +125,9 @@ public class SchminceGame extends BaseGame<UserEventType> {
         if ((model.isHardcore() && deadSurvivors > 0) || (deadSurvivors + safeSurvivors >= model.getSurvivorCount())) {
             this.deadCount = model.getSurvivorCount() - safeSurvivors;
             this.survivorCount = safeSurvivors;
+            this.endTime = new Date();
+            this.slugsKilled = model.getSlugsKilled();
+            this.damageTaken = model.getDamageTaken();
             if (gameState == GameState.InGame) {
                 gameState = GameState.GameOver;
             }

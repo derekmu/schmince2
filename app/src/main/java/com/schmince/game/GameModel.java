@@ -34,6 +34,8 @@ public class GameModel implements GameModelInterface {
     private int selectedSurvivorIndex = 0;
     private HowToPlayStage howToPlayStage;
     private int howToPlayMessageIndex;
+    private int slugsKilled;
+    private int damageTaken;
 
     public GameModel(int survivorCount, int mapSize, int enemyCount, int itemCount, boolean hardcore) {
         this.survivorCount = survivorCount;
@@ -330,13 +332,16 @@ public class GameModel implements GameModelInterface {
         if (chaseSurvivor.getItem() == ItemType.Armor) {
             eventType = SoundEventType.ArmorHit;
             chaseSurvivor.setHealth(chaseSurvivor.getHealth() - 1);
+            damageTaken++;
         } else {
             chaseSurvivor.setHealth(chaseSurvivor.getHealth() - 2);
+            damageTaken += 2;
         }
         makeRelativeSound(eventType, chaseSurvivor.getX(), chaseSurvivor.getY());
     }
 
     public void onGunShot(Survivor survivor, Enemy enemy) {
+        slugsKilled++;
         enemy.setDead(true);
         enemies.remove(enemy);
         newSprite(new GunSprite(survivor.getX(), survivor.getY(), enemy.getX(), enemy.getY()));
@@ -490,5 +495,13 @@ public class GameModel implements GameModelInterface {
 
     public boolean isHardcore() {
         return hardcore;
+    }
+
+    public int getSlugsKilled() {
+        return slugsKilled;
+    }
+
+    public int getDamageTaken() {
+        return damageTaken;
     }
 }

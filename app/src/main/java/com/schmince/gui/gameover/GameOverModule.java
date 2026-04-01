@@ -24,14 +24,12 @@ public class GameOverModule implements GUIModule {
     private List<GUIItem> gui = new ArrayList<>();
     private Panel panelDark = new Panel();
     private Label labelGameOver = new Label("Game Over");
-    private NCSLabel labelSurvivors = new NCSLabel(new NumCharSequence("Survivors: ", null));
-    private NCSLabel labelDead = new NCSLabel(new NumCharSequence("Dead/Lost: ", null));
+    private NCSLabel labelSurvivors = new NCSLabel(new NumCharSequence(null, " Survivors"));
+    private NCSLabel labelDead = new NCSLabel(new NumCharSequence(null, " Dead"));
+    private NCSLabel labelTime = new NCSLabel(new NumCharSequence(null, " Seconds"));
+    private NCSLabel labelSlugsKilled = new NCSLabel(new NumCharSequence(null, " Slugs Killed"));
+    private NCSLabel labelDamageTaken = new NCSLabel(new NumCharSequence(null, " Damage Taken"));
     private Button buttonStartScreen = new StartScreenButton(this);
-    //Time Spent
-    //Items Used
-    //Enemies Killed
-    //Enemies Left Alive
-    //Overall Score?
 
     private SchminceGame game;
 
@@ -49,6 +47,15 @@ public class GameOverModule implements GUIModule {
 
         labelDead.Align = Alignment.Center;
         gui.add(labelDead);
+
+        labelTime.Align = Alignment.Center;
+        gui.add(labelTime);
+
+        labelSlugsKilled.Align = Alignment.Center;
+        gui.add(labelSlugsKilled);
+
+        labelDamageTaken.Align = Alignment.Center;
+        gui.add(labelDamageTaken);
 
         buttonStartScreen.TextScale = 1.5f;
         buttonStartScreen.Align = Alignment.Center;
@@ -69,19 +76,19 @@ public class GameOverModule implements GUIModule {
         int survivors = game.getSurvivorCount();
         int dead = game.getDeadCount();
 
-        labelSurvivors.TextScale = 1f + (((float) survivors) / (dead + survivors)) * 0.5f;
-        labelSurvivors.NCS.setNum(0, survivors);
-
-        labelDead.TextScale = 1f + (((float) dead) / (dead + survivors)) * 0.5f;
-        labelDead.NCS.setNum(0, dead);
-
         if (survivors > 0) {
-            labelGameOver.Text = "Game Won";
+            labelGameOver.Text = "You Won!";
             labelGameOver.Color.set(0, 0.75f, 0, 1f);
         } else {
-            labelGameOver.Text = "Game Lost";
+            labelGameOver.Text = "You Lost!";
             labelGameOver.Color.set(0.75f, 0, 0, 1f);
         }
+
+        labelSurvivors.NCS.setNum(0, survivors);
+        labelDead.NCS.setNum(0, dead);
+        labelTime.NCS.setNum(0, game.getTimeSeconds());
+        labelSlugsKilled.NCS.setNum(0, game.getSlugsKilled());
+        labelDamageTaken.NCS.setNum(0, game.getDamageTaken());
 
         float x = 0;
         float y = height;
@@ -100,6 +107,18 @@ public class GameOverModule implements GUIModule {
         h = labelDead.getGLText(textCache).getHeight();
         y -= h;
         labelDead.Bounds.set(left + x, bottom + y, (float) width, h);
+
+        h = labelTime.getGLText(textCache).getHeight();
+        y -= h;
+        labelTime.Bounds.set(left + x, bottom + y, (float) width, h);
+
+        h = labelSlugsKilled.getGLText(textCache).getHeight();
+        y -= h;
+        labelSlugsKilled.Bounds.set(left + x, bottom + y, (float) width, h);
+
+        h = labelDamageTaken.getGLText(textCache).getHeight();
+        y -= h;
+        labelDamageTaken.Bounds.set(left + x, bottom + y, (float) width, h);
 
         h = buttonStartScreen.getGLText(textCache).getHeight() * 1.5f;
         y = 0;
