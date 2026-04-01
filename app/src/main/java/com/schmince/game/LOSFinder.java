@@ -16,30 +16,30 @@ public class LOSFinder {
     /**
      * Bresenham line algorithm.
      */
-    public boolean hasLOS(int xf, int yf, int xp, int yp) {
-        if (xf > xp || yf > yp) {
-            int t = xp;
-            xp = xf;
-            xf = t;
-            t = yp;
-            yp = yf;
-            yf = t;
+    public boolean hasLOS(int x1, int y1, int x2, int y2) {
+        if (x1 > x2 || (x1 == x2 && y1 > y2)) {
+            int t = x2;
+            x2 = x1;
+            x1 = t;
+            t = y2;
+            y2 = y1;
+            y1 = t;
         }
-        int dx = Math.abs(xp - xf);
-        int dy = Math.abs(yp - yf);
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
         if (Math.max(dx, dy) > 10) {
             return false;
         }
-        int sx = xf < xp ? 1 : -1;
-        int sy = yf < yp ? 1 : -1;
+        int sx = x1 < x2 ? 1 : -1;
+        int sy = y1 < y2 ? 1 : -1;
         int err = dx - dy;
         boolean first = true;
         while (true) {
-            if (xf == xp && yf == yp) {
+            if (x1 == x2 && y1 == y2) {
                 return true;
             }
             if (!first) {
-                SBlock block = blocks[xf][yf];
+                SBlock block = blocks[x1][y1];
                 SObject object = block.getObject();
                 if (object != null && object.blocksLOS()) {
                     return false;
@@ -50,11 +50,11 @@ public class LOSFinder {
             int e2 = 2 * err;
             if (e2 > -dy) {
                 err -= dy;
-                xf += sx;
+                x1 += sx;
             }
             if (e2 < dx) {
                 err += dx;
-                yf += sy;
+                y1 += sy;
             }
         }
     }

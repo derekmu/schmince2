@@ -11,6 +11,13 @@ import java.util.*;
 public class PathFinder {
     private SBlock[][] blocks;
     private int mapSize;
+    private Set<Point> closedSet = new HashSet<>();
+    private Set<Point> openSet = new HashSet<>();
+    private Map<Point, Point> cameFrom = new HashMap<>();
+    // lowest cost to get to a point from the start
+    private Map<Point, Float> toScore = new HashMap<>();
+    // lowest heuristic cost to get to the target via a point
+    private Map<Point, Float> viaScore = new HashMap<>();
 
     public PathFinder(SBlock[][] blocks, int mapSize) {
         this.blocks = blocks;
@@ -21,18 +28,17 @@ public class PathFinder {
      * A* algorithm, based on Wikipedia.
      */
     public List<Point> findPath(int x, int y, int tx, int ty, boolean canDig, boolean hasPick, int seenIndex) {
+        closedSet.clear();
+        openSet.clear();
+        cameFrom.clear();
+        toScore.clear();
+        viaScore.clear();
+
         Point start = new Point(x, y);
         Point target = new Point(tx, ty);
-        Set<Point> closedSet = new HashSet<>();
-        Set<Point> openSet = new HashSet<>();
         openSet.add(start);
-        Map<Point, Point> cameFrom = new HashMap<>();
 
-        // lowest cost to get to a point from the start
-        Map<Point, Float> toScore = new HashMap<>();
         toScore.put(start, 0f);
-        // lowest heuristic cost to get to the target via a point
-        Map<Point, Float> viaScore = new HashMap<>();
         viaScore.put(start, heuristic(start, target));
         int iteration = 0;
 
@@ -40,7 +46,7 @@ public class PathFinder {
         float closestScore = heuristic(start, target);
         while (!openSet.isEmpty()) {
             iteration++;
-            if (iteration > 400) {
+            if (iteration > 200) {
                 break;
             }
 
@@ -92,7 +98,7 @@ public class PathFinder {
         }
 
         List<Point> path = new ArrayList<>();
-        reconstructPath(cameFrom, closest, path);
+        reconstructPath(closest, path);
         return path;
     }
 
@@ -164,9 +170,9 @@ public class PathFinder {
         return (float) Math.sqrt(dx * dx + dy * dy);
     }
 
-    private void reconstructPath(Map<Point, Point> cameFrom, Point current, List<Point> path) {
+    private void reconstructPath(Point current, List<Point> path) {
         if (cameFrom.containsKey(current)) {
-            reconstructPath(cameFrom, cameFrom.get(current), path);
+            reconstructPath(cameFrom.get(current), path);
             path.add(current);
         } else {
             path.add(current);
