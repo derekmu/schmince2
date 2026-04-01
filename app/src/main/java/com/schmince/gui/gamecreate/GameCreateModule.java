@@ -21,7 +21,7 @@ import java.util.List;
  * @author Derek Mulvihill - Jan 25, 2014
  */
 public class GameCreateModule implements GUIModule {
-    private List<GUIItem> gameCreateItems = new ArrayList<>();
+    private List<GUIItem> gui = new ArrayList<>();
     private Panel panelDark = new Panel();
     private Label labelSurvivors = new Label("Survivors");
     private SurvivorCountButton[] survivorCountButtons;
@@ -31,7 +31,8 @@ public class GameCreateModule implements GUIModule {
     private EnemyCountButton[] enemyCountButtons;
     private Label labelItems = new Label("Items");
     private ItemCountButton[] itemCountButtons;
-
+    private Label labelHardcore = new Label("Hardcore?");
+    private HardcoreButton[] hardcoreButtons;
     private StartGameButton startGameButton = new StartGameButton(this);
 
     private SchminceGame game;
@@ -39,24 +40,25 @@ public class GameCreateModule implements GUIModule {
     private int mapSize = 100;
     private int itemCount = 30;
     private int enemyCount = 10;
+    private boolean hardcore = false;
 
     public GameCreateModule() {
         panelDark.Color.set(0f, 0f, 0f, 0.35f);
-        gameCreateItems.add(panelDark);
+        gui.add(panelDark);
 
         labelSurvivors.Align = Alignment.Center;
         labelSurvivors.TextType = GLTextType.SansBold;
-        gameCreateItems.add(labelSurvivors);
+        gui.add(labelSurvivors);
 
         survivorCountButtons = new SurvivorCountButton[C.MAX_SURVIVOR_COUNT];
         for (int i = 0; i < survivorCountButtons.length; i++) {
             SurvivorCountButton button = survivorCountButtons[i] = new SurvivorCountButton(i + 1, this);
-            gameCreateItems.add(button);
+            gui.add(button);
         }
 
         labelWorldSize.Align = Alignment.Center;
         labelWorldSize.TextType = GLTextType.SansBold;
-        gameCreateItems.add(labelWorldSize);
+        gui.add(labelWorldSize);
 
         worldSizeButtons = new WorldSizeButton[]{
                 new WorldSizeButton(25, "Tiny", this),
@@ -66,14 +68,14 @@ public class GameCreateModule implements GUIModule {
                 new WorldSizeButton(200, "Huge", this),
                 new WorldSizeButton(300, "Vast", this),
         };
-        gameCreateItems.addAll(Arrays.asList(worldSizeButtons));
+        gui.addAll(Arrays.asList(worldSizeButtons));
 
         startGameButton.TextType = GLTextType.SansBold;
-        gameCreateItems.add(startGameButton);
+        gui.add(startGameButton);
 
         labelEnemies.Align = Alignment.Center;
         labelEnemies.TextType = GLTextType.SansBold;
-        gameCreateItems.add(labelEnemies);
+        gui.add(labelEnemies);
 
         enemyCountButtons = new EnemyCountButton[]{
                 new EnemyCountButton(0, "None", this),
@@ -83,11 +85,11 @@ public class GameCreateModule implements GUIModule {
                 new EnemyCountButton(20, "Many", this),
                 new EnemyCountButton(30, "Swarm", this),
         };
-        gameCreateItems.addAll(Arrays.asList(enemyCountButtons));
+        gui.addAll(Arrays.asList(enemyCountButtons));
 
         labelItems.Align = Alignment.Center;
         labelItems.TextType = GLTextType.SansBold;
-        gameCreateItems.add(labelItems);
+        gui.add(labelItems);
 
         itemCountButtons = new ItemCountButton[]{
                 new ItemCountButton(0, "None", this),
@@ -97,9 +99,19 @@ public class GameCreateModule implements GUIModule {
                 new ItemCountButton(50, "Many", this),
                 new ItemCountButton(60, "Abundant", this),
         };
-        gameCreateItems.addAll(Arrays.asList(itemCountButtons));
+        gui.addAll(Arrays.asList(itemCountButtons));
 
-        gameCreateItems = Collections.unmodifiableList(gameCreateItems);
+        labelHardcore.Align = Alignment.Center;
+        labelHardcore.TextType = GLTextType.SansBold;
+        gui.add(labelHardcore);
+
+        hardcoreButtons = new HardcoreButton[]{
+                new HardcoreButton(true, "Yes", this),
+                new HardcoreButton(false, "No", this),
+        };
+        gui.addAll(Arrays.asList(hardcoreButtons));
+
+        gui = Collections.unmodifiableList(gui);
     }
 
     @Override
@@ -206,6 +218,29 @@ public class GameCreateModule implements GUIModule {
             x += w;
         }
 
+        h = labelHardcore.getGLText(textCache).getHeight();
+        y -= h + 20;
+        labelHardcore.Bounds.set(left, y, xLeft, h);
+
+        x = xLeft;
+        y += h;
+        h = hardcoreButtons[0].getGLText(textCache).getHeight();
+        y -= h;
+        w = (width - xLeft - 5) / hardcoreButtons.length;
+        for (HardcoreButton button : hardcoreButtons) {
+            if (x + w > width) {
+                x = xLeft;
+                y -= h + 5;
+            }
+            if (button.getHardcore() == hardcore) {
+                button.NormalColor.set(0, 0.5f, 0);
+            } else {
+                button.NormalColor.set(0, 0, 1);
+            }
+            button.Bounds.set(left + x, y, w - 5, h);
+            x += w;
+        }
+
         glText = startGameButton.getGLText(textCache);
         w = glText.getLength(startGameButton.Text) * 1.25f;
         h = glText.getHeight() * 1.25f;
@@ -214,7 +249,7 @@ public class GameCreateModule implements GUIModule {
 
     @Override
     public List<GUIItem> getGUI() {
-        return gameCreateItems;
+        return gui;
     }
 
     public void setGame(SchminceGame game) {
@@ -237,7 +272,11 @@ public class GameCreateModule implements GUIModule {
         this.itemCount = itemCount;
     }
 
+    public void setHardcore(boolean hardcore) {
+        this.hardcore = hardcore;
+    }
+
     public void createGame() {
-        game.onCreateGame(survivorCount, mapSize, itemCount, enemyCount);
+        game.onCreateGame(survivorCount, mapSize, itemCount, enemyCount, hardcore);
     }
 }

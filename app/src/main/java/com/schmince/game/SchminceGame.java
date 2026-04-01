@@ -30,13 +30,14 @@ public class SchminceGame extends BaseGame<UserEventType> {
     private final BasicOnCompletionListener ONCOMPLETELISTENER = new BasicOnCompletionListener();
     public Context context;
     private GameState gameState = GameState.StartScreen;
-    private GameModel model = new GameModel(C.MAX_SURVIVOR_COUNT, 100, 10, 20);
+    private GameModel model = new GameModel(C.MAX_SURVIVOR_COUNT, 100, 10, 20, false);
     private HowToPlayStage[] howToPlayStages = HowToPlayStage.buildHowToPlayStages();
     private int howToPlayStageIndex = 0;
     private int gameStartSurvivorCount;
     private int gameStartMapSize;
     private int gameStartItems;
     private int gameStartEnemies;
+    private boolean gameHardcore;
     private int deadCount;
     private int survivorCount;
 
@@ -65,7 +66,7 @@ public class SchminceGame extends BaseGame<UserEventType> {
                 break;
             }
             case GameStarting: {
-                model = new GameModel(gameStartSurvivorCount, gameStartMapSize, gameStartEnemies, gameStartItems);
+                model = new GameModel(gameStartSurvivorCount, gameStartMapSize, gameStartEnemies, gameStartItems, gameHardcore);
                 gameState = GameState.InGame;
                 break;
             }
@@ -103,8 +104,8 @@ public class SchminceGame extends BaseGame<UserEventType> {
             survivor.update(model);
         }
 
-        if (deadSurvivors + safeSurvivors == model.getSurvivorCount()) {
-            this.deadCount = deadSurvivors;
+        if ((model.isHardcore() && deadSurvivors > 0) || (deadSurvivors + safeSurvivors >= model.getSurvivorCount())) {
+            this.deadCount = model.getSurvivorCount() - safeSurvivors;
             this.survivorCount = safeSurvivors;
             if (gameState == GameState.InGame) {
                 gameState = GameState.GameOver;
@@ -182,6 +183,7 @@ public class SchminceGame extends BaseGame<UserEventType> {
                 gameStartMapSize = eventValues.mapSize;
                 gameStartItems = eventValues.itemPer;
                 gameStartEnemies = eventValues.enemyPer;
+                gameHardcore = eventValues.hardcore;
                 gameState = GameState.GameStarting;
                 break;
             }
@@ -228,12 +230,13 @@ public class SchminceGame extends BaseGame<UserEventType> {
         newEvent(UserEventType.EndGameOver);
     }
 
-    public synchronized void onCreateGame(int survivorCount, int mapSize, int itemPer, int enemyPer) {
+    public synchronized void onCreateGame(int survivorCount, int mapSize, int itemPer, int enemyPer, boolean hardcore) {
         if (newEvent(UserEventType.CreateGame)) {
             eventValues.survivorCount = survivorCount;
             eventValues.mapSize = mapSize;
             eventValues.itemPer = itemPer;
             eventValues.enemyPer = enemyPer;
+            eventValues.hardcore = hardcore;
         }
     }
 
@@ -259,6 +262,7 @@ public class SchminceGame extends BaseGame<UserEventType> {
         volatile int survivorCount;
         volatile int itemPer;
         volatile int enemyPer;
+        volatile boolean hardcore;
 
         volatile int survivorIndex;
         volatile float worldX;

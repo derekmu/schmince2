@@ -21,11 +21,11 @@ import java.util.List;
  * @author Derek Mulvihill - Feb 8, 2014
  */
 public class GameOverModule implements GUIModule {
-    private List<GUIItem> gameOverItems = new ArrayList<>();
+    private List<GUIItem> gui = new ArrayList<>();
     private Panel panelDark = new Panel();
     private Label labelGameOver = new Label("Game Over");
     private NCSLabel labelSurvivors = new NCSLabel(new NumCharSequence("Survivors: ", null));
-    private NCSLabel labelDead = new NCSLabel(new NumCharSequence("Dead: ", null));
+    private NCSLabel labelDead = new NCSLabel(new NumCharSequence("Dead/Lost: ", null));
     private Button buttonStartScreen = new StartScreenButton(this);
     //Time Spent
     //Items Used
@@ -37,24 +37,24 @@ public class GameOverModule implements GUIModule {
 
     public GameOverModule() {
         panelDark.Color.set(0f, 0f, 0f, 0.4f);
-        gameOverItems.add(panelDark);
+        gui.add(panelDark);
 
         labelGameOver.TextScale = 2.5f;
         labelGameOver.TextType = GLTextType.SansBold;
         labelGameOver.Align = Alignment.Center;
-        gameOverItems.add(labelGameOver);
+        gui.add(labelGameOver);
 
         labelSurvivors.Align = Alignment.Center;
-        gameOverItems.add(labelSurvivors);
+        gui.add(labelSurvivors);
 
         labelDead.Align = Alignment.Center;
-        gameOverItems.add(labelDead);
+        gui.add(labelDead);
 
         buttonStartScreen.TextScale = 1.5f;
         buttonStartScreen.Align = Alignment.Center;
-        gameOverItems.add(buttonStartScreen);
+        gui.add(buttonStartScreen);
 
-        gameOverItems = Collections.unmodifiableList(gameOverItems);
+        gui = Collections.unmodifiableList(gui);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class GameOverModule implements GUIModule {
 
     @Override
     public List<GUIItem> getGUI() {
-        return gameOverItems;
+        return gui;
     }
 
     public void setGame(SchminceGame game) {

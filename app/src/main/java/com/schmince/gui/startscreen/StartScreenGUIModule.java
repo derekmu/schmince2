@@ -24,28 +24,28 @@ public class StartScreenGUIModule implements GUIModule {
     private final NewGameButton newGameButton = new NewGameButton();
     private final HowToPlayButton howToPlayButton = new HowToPlayButton();
     private final PrivacyButton privacyButton = new PrivacyButton();
-    private List<GUIItem> startScreenItems = new ArrayList<>();
+    private List<GUIItem> gui = new ArrayList<>();
 
     public StartScreenGUIModule() {
         panelDark.Color.set(0f, 0f, 0f, 0.35f);
-        startScreenItems.add(panelDark);
+        gui.add(panelDark);
 
         titleIcon.AspectRatio = 6f;
-        startScreenItems.add(titleIcon);
+        gui.add(titleIcon);
 
         newGameButton.TextScale = 1.5f;
         newGameButton.NormalColor.set(0f, 0f, 1f, 0.5f);
-        startScreenItems.add(newGameButton);
+        gui.add(newGameButton);
 
         howToPlayButton.TextScale = 1.5f;
         howToPlayButton.NormalColor.set(0f, 1f, 0f, 0.5f);
-        startScreenItems.add(howToPlayButton);
+        gui.add(howToPlayButton);
 
         privacyButton.TextScale = 1.5f;
         privacyButton.NormalColor.set(1f, 0f, 0f, 0.5f);
-        startScreenItems.add(privacyButton);
+        gui.add(privacyButton);
 
-        startScreenItems = Collections.unmodifiableList(startScreenItems);
+        gui = Collections.unmodifiableList(gui);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class StartScreenGUIModule implements GUIModule {
 
     @Override
     public List<GUIItem> getGUI() {
-        return startScreenItems;
+        return gui;
     }
 
     public void setGame(SchminceGame game) {

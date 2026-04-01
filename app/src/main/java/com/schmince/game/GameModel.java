@@ -23,6 +23,7 @@ public class GameModel implements GameModelInterface {
     final List<Flare> flares = new ArrayList<>();
     private final int survivorCount;
     private final int mapSize;
+    private final boolean hardcore;
     private final SBlock[][] blocks;
     private final PathFinder pathFinder;
     private final LOSFinder losFinder;
@@ -34,9 +35,10 @@ public class GameModel implements GameModelInterface {
     private HowToPlayStage howToPlayStage;
     private int howToPlayMessageIndex;
 
-    public GameModel(int survivorCount, int mapSize, int enemyCount, int itemCount) {
+    public GameModel(int survivorCount, int mapSize, int enemyCount, int itemCount, boolean hardcore) {
         this.survivorCount = survivorCount;
         this.mapSize = mapSize;
+        this.hardcore = hardcore;
 
         int shipX = Math.min(mapSize - 2 - C.SHIP_SIZE,
                 Math.max(1 + C.SHIP_SIZE, DRandom.get().nextInt(mapSize)));
@@ -143,6 +145,7 @@ public class GameModel implements GameModelInterface {
         this.howToPlayMessageIndex = messageIndex;
         this.survivorCount = stage.getSurvivorLocations().length;
         this.mapSize = stage.getMapSize();
+        this.hardcore = false;
 
         blocks = new SBlock[mapSize][];
         for (int i = 0; i < blocks.length; i++) {
@@ -483,5 +486,9 @@ public class GameModel implements GameModelInterface {
             return howToPlayStage.getMessages()[howToPlayMessageIndex];
         }
         return null;
+    }
+
+    public boolean isHardcore() {
+        return hardcore;
     }
 }

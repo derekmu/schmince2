@@ -26,7 +26,7 @@ import java.util.List;
 public class InGameGUIModule implements GUIModule {
     private SchminceGame game;
 
-    private List<GUIItem> inGameItems = new ArrayList<>();
+    private List<GUIItem> gui = new ArrayList<>();
     private SelectSurvivorButton[] survivorButtons = new SelectSurvivorButton[C.MAX_SURVIVOR_COUNT];
     private UseItemButton useItemButton = new UseItemButton();
 
@@ -38,19 +38,19 @@ public class InGameGUIModule implements GUIModule {
         for (int i = 0; i < survivorButtons.length; i++) {
             SelectSurvivorButton button = new SelectSurvivorButton(i);
             survivorButtons[i] = button;
-            inGameItems.add(button);
+            gui.add(button);
         }
-        inGameItems.add(useItemButton);
+        gui.add(useItemButton);
 
         panelHowToPlayMessage.Color.set(0, 0, 0.5f, 0.5f);
-        inGameItems.add(panelHowToPlayMessage);
+        gui.add(panelHowToPlayMessage);
 
         howToPlayNextButton.NormalColor.set(0, 0.75f, 0, 0.5f);
-        inGameItems.add(howToPlayNextButton);
+        gui.add(howToPlayNextButton);
 
-        Collections.addAll(inGameItems, howToPlayMessageLabels);
+        Collections.addAll(gui, howToPlayMessageLabels);
 
-        inGameItems = Collections.unmodifiableList(inGameItems);
+        gui = Collections.unmodifiableList(gui);
     }
 
     @Override
@@ -140,7 +140,7 @@ public class InGameGUIModule implements GUIModule {
 
     @Override
     public List<GUIItem> getGUI() {
-        return inGameItems;
+        return gui;
     }
 
     public void setGame(SchminceGame game) {
